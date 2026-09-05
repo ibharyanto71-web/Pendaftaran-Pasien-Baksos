@@ -246,9 +246,13 @@ $("regForm").onsubmit=async e=>{
     $("regSuccess").classList.remove("hidden");
 
     $("regSuccess").innerHTML=
-      "<b>Pendaftaran berhasil.</b><br>"+
-      "ID Pasien: <strong>"+esc(r.id)+"</strong><br><br>"+
-      "Silakan simpan ID Pasien ini dan tunggu petugas.";
+  "<b>Pendaftaran berhasil.</b>"+
+  "<br><br>"+
+  "ID Pasien: <strong>"+esc(r.id)+"</strong>"+
+  "<br>"+
+  "PIN Pasien: <strong>"+esc(r.pin)+"</strong>"+
+  "<br><br>"+
+  "⚠️ Simpan ID Pasien dan PIN ini untuk mengakses Dashboard Pasien ASDTY."
 
   }catch(e){
 
