@@ -1,254 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#5b21b6">
-<title>Portal Pasien ASDTY • Bakti Pengobatan</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Portal Pasien ASDTY</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#18131f;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.top{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:22px max(16px,calc((100% - 980px)/2))}.top h1{margin:4px 0;font-size:30px}.top p{margin:0;opacity:.88;font-size:13px}main{max-width:980px;margin:auto;padding:18px}.card{background:#fff;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 8px 28px #2e106514}.pill{display:inline-block;background:#ede9fe;color:#5b21b6;padding:7px 11px;border-radius:99px;font-size:11px;font-weight:900;letter-spacing:.3px}label{display:block;font-size:13px;font-weight:750;margin-bottom:13px}input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #ddd6fe;border-radius:11px;background:#faf9ff;font:inherit}textarea{resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:850;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.primary{background:#6d28d9;color:#fff}.secondary{background:#fff;color:#4c1d95;border:1px solid #ddd6fe}.full{width:100%}.success{background:#ecfdf5;border:1px solid #86efac;color:#166534;padding:15px;border-radius:13px;line-height:1.65}.error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:13px;border-radius:13px}.small{font-size:12px;color:#716879}.hidden{display:none!important}.hero{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;border-radius:20px;padding:24px;margin-bottom:16px}.hero h2{margin:6px 0}.hero p{margin:0;opacity:.9}.portal-login{max-width:560px;margin:0 auto}.portal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.portal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}.stat{background:#fff;border-radius:17px;padding:17px;box-shadow:0 6px 20px #2e106510}.stat span{display:block;font-size:10px;font-weight:850;color:#766c82;text-transform:uppercase;letter-spacing:.7px}.stat strong{display:block;font-size:26px;color:#5b21b6;margin-top:5px}.dashboard-card{background:#fff;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 8px 28px #2e106514}.chart-box{position:relative;height:320px;margin-top:12px}.therapy-item{border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:12px}.therapy-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}.therapy-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.therapy-grid small{display:block;color:#777;margin-bottom:4px}.therapy-grid b{display:block}.detail{margin-top:12px;padding-top:12px;border-top:1px solid #eee;white-space:pre-wrap;line-height:1.5}.status{display:inline-block;padding:7px 11px;border-radius:99px;background:#ede9fe;color:#5b21b6;font-size:11px;font-weight:900}.footer{text-align:center;color:#777;font-size:11px;padding:10px 0 25px}@media(max-width:700px){.portal-stats{grid-template-columns:1fr 1fr}.therapy-grid{grid-template-columns:1fr 1fr}.chart-box{height:280px}}@media(max-width:520px){.grid,.portal-stats,.therapy-grid{grid-template-columns:1fr}.top h1{font-size:26px}.card,.dashboard-card{padding:17px}}@media print{.top,.no-print{display:none!important}body{background:#fff}main{padding:0}.card,.dashboard-card{box-shadow:none}}
-</style>
-</head>
-<body>
-<header class="top"><div><div style="font-size:11px;letter-spacing:2px;font-weight:900">ASDTY</div><h1>Bakti Pengobatan</h1><p>Portal Pasien • Perkembangan Terapi • Jurnal</p></div></header>
-<main>
-<section id="registerPage">
-  <div class="card">
-    <span class="pill">REGISTRASI PASIEN</span>
-    <h2>Daftar Pelayanan Bakti Pengobatan</h2>
-    <p class="small">Isi data berikut. Setelah berhasil, Anda akan mendapatkan ID Pasien dan PIN untuk mengakses Dashboard Pasien ASDTY.</p>
-    <form id="regForm">
-      <div class="grid">
-        <label>Nama Lengkap *<input id="name" required autocomplete="name" placeholder="Nama lengkap"></label>
-        <label>Umur *<input id="age" type="number" min="1" max="120" required placeholder="Umur"></label>
-        <label>Jenis Kelamin *<select id="gender" required><option value="">Pilih</option><option>Laki-laki</option><option>Perempuan</option></select></label>
-        <label>WhatsApp *<input id="phone" required inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx"></label>
-      </div>
-      <label>Alamat *<textarea id="address" rows="3" required placeholder="Alamat tempat tinggal"></textarea></label>
-      <label>Keluhan Utama *<textarea id="complaint" rows="3" required placeholder="Keluhan yang dirasakan"></textarea></label>
-      <label>Riwayat Penyakit / Kondisi Penting<textarea id="history" rows="3" placeholder="Bila ada, tuliskan riwayat penyakit atau kondisi penting"></textarea></label>
-      <button id="regBtn" class="btn primary full" type="submit">Kirim Pendaftaran</button>
-    </form>
-    <div id="regSuccess" class="success hidden"></div>
-  </div>
-  <div class="card" style="text-align:center"><span class="pill">SUDAH TERDAFTAR?</span><h3>Ingin melihat perkembangan terapi?</h3><p class="small">Masuk menggunakan ID Pasien dan PIN Anda.</p><button
-  type="button"
-  class="btn secondary"
-  onclick="showPortal()">
-  📊 Buka Dashboard Pasien
-</button></div>
-</section>
-
-<section id="portalPage" class="hidden">
-  <div id="portalLogin" class="portal-login">
-    <div class="hero"><div style="font-size:11px;letter-spacing:2px;font-weight:900">PORTAL PASIEN ASDTY</div><h2>Dashboard Perkembangan Terapi</h2><p>Pantau perjalanan terapi Anda dari waktu ke waktu.</p></div>
-    <div class="card">
-      <span class="pill">LOGIN PASIEN</span><h2>Masuk ke Dashboard</h2>
-      <p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p>
-      <label>ID Pasien<input id="patientId" type="text" autocomplete="username" placeholder="Contoh: ASD-20260905-223733"></label>
-      <label>PIN Pasien<input id="patientPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="6 digit PIN"></label>
-      <button id="patientLoginBtn" class="btn primary full" onclick="loginPatient()">📊 Masuk Dashboard</button>
-      <div id="patientLoginMsg" class="hidden error" style="margin-top:10px"></div>
-      <button class="btn secondary full no-print" style="margin-top:10px" onclick="showRegister()">← Kembali ke Pendaftaran</button>
-    </div>
-  </div>
-
-  <div id="patientDashboard" class="hidden">
-    <div class="portal-head">
-      <div><span class="pill">DASHBOARD PASIEN ASDTY</span><h2 id="dashName" style="margin:7px 0 2px">-</h2><div id="dashId" class="small">-</div></div>
-      <div class="nav no-print"><button class="btn secondary" onclick="window.print()">🖨 Cetak</button><button class="btn secondary" onclick="patientLogout()">Keluar</button></div>
-    </div>
-    <div class="portal-stats">
-      <div class="stat"><span>Status</span><strong id="dashStatus">-</strong></div>
-      <div class="stat"><span>Sesi Terapi</span><strong id="dashSessions">0</strong></div>
-      <div class="stat"><span>Nyeri Terakhir</span><strong id="dashPain">-</strong></div>
-      <div class="stat"><span>Perubahan Nyeri</span><strong id="dashImprovement">-</strong></div>
-    </div>
-    <div class="dashboard-card"><h2 style="margin-top:0">📈 Perkembangan Nyeri</h2><p class="small">Perbandingan skala nyeri sebelum dan setelah setiap sesi. Grafik dapat disentuh/diklik untuk melihat detail sesi.</p><div class="chart-box"><canvas id="painChart"></canvas></div></div>
-    <div class="dashboard-card"><h2 style="margin-top:0">🩺 Tekanan Darah</h2><p class="small">Riwayat tekanan darah yang dicatat pada kunjungan terapi.</p><div class="chart-box"><canvas id="bpChart"></canvas></div></div>
-    <div class="dashboard-card"><h2 style="margin-top:0">📋 Riwayat Terapi</h2><div id="therapyHistory"></div></div>
-  </div>
-</section>
-<div class="footer">ASDTY • Bakti Pengobatan • Dashboard Pasien</div>
-</main>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f1ff;color:#111827}.hidden{display:none!important}.wrap{max-width:960px;margin:auto;padding:28px 18px 50px}.hero{background:linear-gradient(135deg,#5420a8,#7b2ee6);color:#fff;border-radius:0 0 22px 22px;padding:28px 26px;margin-bottom:18px}.hero small{font-size:12px;font-weight:900;letter-spacing:2px}.hero h1{margin:10px 0 6px;font-size:28px}.hero p{margin:0}.card{background:#fff;border-radius:22px;padding:28px;margin-bottom:18px;box-shadow:0 10px 30px #3b168314}.card h2{margin:12px 0 18px;font-size:25px}.pill{display:inline-block;background:#eee7ff;color:#5b21b6;border-radius:999px;padding:8px 13px;font-size:12px;font-weight:900}.small{font-size:14px;color:#6b7280;line-height:1.5}label{display:block;font-weight:700;margin:14px 0 7px}input,select,textarea{width:100%;padding:14px 15px;border:1px solid #d9d0ff;border-radius:12px;background:#fbfaff;font-size:16px}textarea{resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{border:0;border-radius:12px;padding:14px 18px;font-size:16px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.65}.primary{background:#7026df;color:#fff}.secondary{background:#fff;color:#5420a8;border:1px solid #d9ccff}.full{width:100%}.msg{margin-top:12px;padding:13px;border-radius:12px;background:#fff0f0;color:#c62828;border:1px solid #ffcaca}.success{padding:18px;border-radius:14px;background:#effcf3;color:#176b35;border:1px solid #b9e7c6;line-height:1.7}.portal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.portal-head h2{margin:8px 0 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{border:1px solid #eee7ff;border-radius:15px;padding:16px;background:#fbfaff}.stat span{display:block;color:#6b7280;font-size:13px;margin-bottom:7px}.stat strong{font-size:23px;color:#5420a8}.chartbox{height:310px;margin-top:15px}.therapy-item{border:1px solid #e9e2ff;border-radius:15px;padding:16px;margin:12px 0}.therapy-top{display:flex;justify-content:space-between;gap:10px}.therapy-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.therapy-grid div{background:#faf8ff;border-radius:10px;padding:11px}.therapy-grid small{display:block;color:#777;margin-bottom:5px}.detail{margin-top:10px;padding:10px 12px;background:#faf8ff;border-radius:10px;line-height:1.5}footer{text-align:center;color:#718096;font-size:13px;margin-top:22px}@media(max-width:700px){.grid,.stats,.therapy-grid{grid-template-columns:1fr 1fr}.portal-head{align-items:flex-start;flex-direction:column}}@media(max-width:480px){.grid,.stats,.therapy-grid{grid-template-columns:1fr}.card{padding:20px}}
+</style></head>
+<body><div class="wrap">
+<div class="hero"><small>PORTAL PASIEN ASDTY</small><h1>Dashboard Perkembangan Terapi</h1><p>Pantau perjalanan terapi Anda dari waktu ke waktu.</p></div>
+<section id="registerPage"><div class="card"><span class="pill">REGISTRASI PASIEN</span><h2>Daftar Pelayanan Bakti Pengobatan</h2><p class="small">Isi data berikut. Setelah berhasil, Anda akan mendapatkan ID Pasien dan PIN untuk mengakses Dashboard Pasien ASDTY.</p><form id="regForm"><div class="grid"><div><label>Nama Lengkap *</label><input id="name" required autocomplete="name" placeholder="Nama lengkap"></div><div><label>Umur *</label><input id="age" type="number" min="1" max="120" required placeholder="Umur"></div><div><label>Jenis Kelamin *</label><select id="gender" required><option value="">Pilih</option><option>Laki-laki</option><option>Perempuan</option></select></div><div><label>WhatsApp *</label><input id="phone" required inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx"></div></div><label>Alamat tempat tinggal *</label><textarea id="address" rows="3" required placeholder="Alamat tempat tinggal"></textarea><label>Keluhan Utama *</label><textarea id="complaint" rows="3" required placeholder="Keluhan yang dirasakan"></textarea><label>Riwayat Penyakit / Kondisi Penting</label><textarea id="history" rows="3" placeholder="Bila ada, tuliskan riwayat penyakit atau kondisi penting"></textarea><button id="regBtn" class="btn primary full" type="submit" style="margin-top:15px">Kirim Pendaftaran</button></form><div id="regSuccess" class="success hidden"></div></div>
+<div class="card" style="text-align:center"><span class="pill">SUDAH TERDAFTAR?</span><h2>Ingin melihat perkembangan terapi?</h2><p class="small">Masuk menggunakan ID Pasien dan PIN Anda.</p><button type="button" class="btn secondary" onclick="return showPortal();">📊 Buka Dashboard Pasien</button></div></section>
+<section id="portalPage" class="hidden"><div id="portalLogin" class="card"><span class="pill">LOGIN PASIEN</span><h2>Masuk ke Dashboard</h2><p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p><label>ID Pasien</label><input id="patientId" type="text" autocomplete="off" placeholder="Contoh: ASD-20260905-223733"><label>PIN Pasien</label><input id="patientPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="6 digit PIN"><button id="patientLoginBtn" type="button" class="btn primary full" onclick="loginPatient()" style="margin-top:13px">📊 Masuk Dashboard</button><div id="patientLoginMsg" class="msg hidden"></div><button type="button" class="btn secondary full" style="margin-top:10px" onclick="return showRegister();">← Kembali ke Pendaftaran</button></div>
+<div id="patientDashboard" class="hidden"><div class="card"><div class="portal-head"><div><span class="pill">DASHBOARD PASIEN ASDTY</span><h2 id="dashName">-</h2><div id="dashId" class="small">ID Pasien: -</div></div><button type="button" class="btn secondary" onclick="patientLogout()">Keluar</button></div><div class="stats"><div class="stat"><span>Status</span><strong id="dashStatus">-</strong></div><div class="stat"><span>Sesi Terapi</span><strong id="dashSessions">0</strong></div><div class="stat"><span>Nyeri Terakhir</span><strong id="dashPain">-</strong></div><div class="stat"><span>Perbaikan</span><strong id="dashImprovement">-</strong></div></div></div><div class="card"><h3>Perkembangan Skala Nyeri</h3><div class="chartbox"><canvas id="painChart"></canvas></div></div><div class="card"><h3>Perkembangan Tekanan Darah</h3><div class="chartbox"><canvas id="bpChart"></canvas></div></div><div class="card"><h3>Riwayat Terapi</h3><div id="therapyHistory"></div></div></div></section><footer>ASDTY • Bakti Pengobatan • Dashboard Pasien</footer></div>
 <script>
-const API="https://script.google.com/macros/s/AKfycbwtrmRYWtd0g3HW3Igy7XBkgPs2prqcFWty1t3OdzTRlQYeHMDf0Qt0tjgkFTei-m4r/exec";
-let patientData=null,painChart=null,bpChart=null;
-const $=id=>document.getElementById(id);
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function formatStatus(s){const v=String(s||"MENUNGGU").toUpperCase();return v==="SEDANG_TERAPI"?"Sedang terapi":v==="SELESAI"?"Selesai":"Menunggu"}
+const API="https://script.google.com/macros/s/AKfycbwtrmRYWtd0g3HW3Igy7XBkgPs2prqcFWty1t3OdzTRlQYeHMDf0Qt0tjgkFTei-m4r/exec";let patientData=null,painChart=null,bpChart=null;const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}function formatStatus(s){const v=String(s||"MENUNGGU").toUpperCase();return v==="SEDANG_TERAPI"?"Sedang terapi":v==="SELESAI"?"Selesai":"Menunggu"}
 async function apiPost(x){if(API.startsWith("__"))throw Error("URL Apps Script belum dipasang.");const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(x)});const text=await r.text();try{return JSON.parse(text)}catch(e){throw Error("Server tidak mengirim JSON. Status "+r.status+". Response: "+text.substring(0,250))}}
-function showRegister(){$("portalPage").classList.add("hidden");$("registerPage").classList.remove("hidden");window.scrollTo(0,0)}
-function showPortal(){$("registerPage").classList.add("hidden");$("portalPage").classList.remove("hidden");window.scrollTo(0,0);$("patientId").focus()}
-async function loginPatient(){
-
-  const idEl = document.getElementById("patientId");
-  const pinEl = document.getElementById("patientPin");
-  const btn = document.getElementById("patientLoginBtn");
-  const msg = document.getElementById("patientLoginMsg");
-
-  const id = idEl ? String(idEl.value || "").trim() : "";
-  const pin = pinEl ? String(pinEl.value || "").trim() : "";
-
-  msg.classList.add("hidden");
-  msg.textContent = "";
-
-  if (!id || !pin) {
-    msg.textContent = "ID Pasien dan PIN wajib diisi.";
-    msg.classList.remove("hidden");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = "Memeriksa...";
-
-  try {
-
-    const r = await apiPost({
-      action: "patientLogin",
-      id: id,
-      pin: pin
-    });
-
-    if (!r || !r.ok) {
-      throw new Error(
-        r && r.error
-          ? r.error
-          : "ID Pasien atau PIN salah."
-      );
-    }
-
-    // Simpan data pasien
-    patientData = r;
-
-    // Tampilkan dashboard
-    renderPatientDashboard();
-
-    document
-      .getElementById("portalLogin")
-      .classList.add("hidden");
-
-    document
-      .getElementById("patientDashboard")
-      .classList.remove("hidden");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  } catch (e) {
-
-    console.error("LOGIN PASIEN:", e);
-
-    msg.textContent =
-      e.message || "Tidak dapat membuka dashboard pasien.";
-
-    msg.classList.remove("hidden");
-
-  } finally {
-
-    btn.disabled = false;
-    btn.textContent = "📊 Masuk Dashboard";
-
-  }
-}
-
-    renderPatientDashboard();
-
-    document
-      .getElementById("portalLogin")
-      .classList.add("hidden");
-
-    document
-      .getElementById("patientDashboard")
-      .classList.remove("hidden");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  } catch (e) {
-
-    console.error("LOGIN PASIEN:", e);
-
-    msg.textContent =
-      e.message || "Tidak dapat membuka dashboard pasien.";
-
-    msg.classList.remove("hidden");
-
-  } finally {
-
-    btn.disabled = false;
-    btn.textContent = "📊 Masuk Dashboard";
-
-  }
-}
+function showRegister(){$("portalPage").classList.add("hidden");$("registerPage").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});return false}
+function showPortal(){const rp=$("registerPage"),pp=$("portalPage");if(!rp||!pp){alert("ERROR: halaman portal tidak ditemukan.");return false}rp.classList.add("hidden");pp.classList.remove("hidden");$("portalLogin").classList.remove("hidden");$("patientDashboard").classList.add("hidden");window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>$("patientId").focus(),300);return false}
+async function loginPatient(){const idEl=$("patientId"),pinEl=$("patientPin"),btn=$("patientLoginBtn"),msg=$("patientLoginMsg");const id=idEl?String(idEl.value||"").trim():"",pin=pinEl?String(pinEl.value||"").trim():"";msg.classList.add("hidden");msg.textContent="";if(!id||!pin){msg.textContent="ID Pasien dan PIN wajib diisi.";msg.classList.remove("hidden");return}btn.disabled=true;btn.textContent="Memeriksa...";try{const r=await apiPost({action:"patientLogin",id:id,pin:pin});if(!r||!r.ok)throw Error(r&&r.error?r.error:"ID Pasien atau PIN salah.");patientData=r;renderPatientDashboard();$("portalLogin").classList.add("hidden");$("patientDashboard").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}catch(e){console.error("LOGIN PASIEN:",e);msg.textContent=e.message||"Tidak dapat membuka dashboard pasien.";msg.classList.remove("hidden")}finally{btn.disabled=false;btn.textContent="📊 Masuk Dashboard"}}
 function renderPatientDashboard(){const p=patientData.patient||{},h=patientData.therapies||[];$("dashName").textContent=p.name||"-";$("dashId").textContent="ID Pasien: "+(p.id||"-");$("dashStatus").textContent=formatStatus(p.status);$("dashSessions").textContent=h.length;if(h.length){const last=h[0],first=Number(h[h.length-1].painBefore||0),after=Number(last.painAfter||0);$("dashPain").textContent=(last.painAfter??"-")+"/10";$("dashImprovement").textContent=first>0?Math.max(0,Math.round((first-after)/first*100))+"%":"-"}else{$("dashPain").textContent="-";$("dashImprovement").textContent="-"}renderPainChart(h);renderBPChart(h);renderTherapyHistory(h)}
-function renderPainChart(history){const canvas=$("painChart"),data=[...history].reverse();if(painChart){painChart.destroy();painChart=null}if(!data.length){canvas.parentElement.innerHTML='<div class="small">Belum ada data terapi.</div>';return}painChart=new Chart(canvas.getContext("2d"),{type:"line",data:{labels:data.map((t,i)=>"Sesi "+(i+1)),datasets:[{label:"Nyeri sebelum",data:data.map(t=>Number(t.painBefore)||0),tension:.35,borderWidth:3,pointRadius:5},{label:"Nyeri setelah",data:data.map(t=>Number(t.painAfter)||0),tension:.35,borderWidth:3,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{title:items=>{const t=data[items[0].dataIndex];return (t.date||"")+" • "+(t.time||"")}}}},scales:{y:{min:0,max:10,title:{display:true,text:"Skala Nyeri"}}}}})}
-function renderBPChart(history){const canvas=$("bpChart"),data=[...history].reverse().filter(t=>t.bp);if(bpChart){bpChart.destroy();bpChart=null}if(!data.length){canvas.parentElement.innerHTML='<div class="small">Belum ada data tekanan darah.</div>';return}const systolic=[],diastolic=[];data.forEach(t=>{const m=String(t.bp).replace(/\s/g,"").match(/^(\d+)\/(\d+)$/);systolic.push(m?Number(m[1]):null);diastolic.push(m?Number(m[2]):null)});bpChart=new Chart(canvas.getContext("2d"),{type:"line",data:{labels:data.map((t,i)=>"Sesi "+(i+1)),datasets:[{label:"Sistolik",data:systolic,tension:.35,borderWidth:3,pointRadius:5},{label:"Diastolik",data:diastolic,tension:.35,borderWidth:3,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{title:items=>{const t=data[items[0].dataIndex];return (t.date||"")+" • "+(t.time||"")}}}},scales:{y:{title:{display:true,text:"mmHg"}}}}})}
+function renderPainChart(history){const canvas=$("painChart"),data=[...history].reverse();if(painChart){painChart.destroy();painChart=null}if(!data.length){canvas.parentElement.innerHTML='<div class="small">Belum ada data terapi.</div>';return}painChart=new Chart(canvas.getContext("2d"),{type:"line",data:{labels:data.map((t,i)=>"Sesi "+(i+1)),datasets:[{label:"Nyeri sebelum",data:data.map(t=>Number(t.painBefore)||0),tension:.35,borderWidth:3,pointRadius:5},{label:"Nyeri setelah",data:data.map(t=>Number(t.painAfter)||0),tension:.35,borderWidth:3,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{title:items=>{const t=data[items[0].dataIndex];return(t.date||"")+" • "+(t.time||"")}}}},scales:{y:{min:0,max:10,title:{display:true,text:"Skala Nyeri"}}}}})}
+function renderBPChart(history){const canvas=$("bpChart"),data=[...history].reverse().filter(t=>t.bp);if(bpChart){bpChart.destroy();bpChart=null}if(!data.length){canvas.parentElement.innerHTML='<div class="small">Belum ada data tekanan darah.</div>';return}const systolic=[],diastolic=[];data.forEach(t=>{const m=String(t.bp).replace(/\s/g,"").match(/^(\d+)\/(\d+)$/);systolic.push(m?Number(m[1]):null);diastolic.push(m?Number(m[2]):null)});bpChart=new Chart(canvas.getContext("2d"),{type:"line",data:{labels:data.map((t,i)=>"Sesi "+(i+1)),datasets:[{label:"Sistolik",data:systolic,tension:.35,borderWidth:3,pointRadius:5},{label:"Diastolik",data:diastolic,tension:.35,borderWidth:3,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{title:items=>{const t=data[items[0].dataIndex];return(t.date||"")+" • "+(t.time||"")}}}},scales:{y:{title:{display:true,text:"mmHg"}}}}})}
 function renderTherapyHistory(history){const el=$("therapyHistory");if(!history.length){el.innerHTML='<div class="small">Belum ada jurnal terapi.</div>';return}el.innerHTML=history.map((t,i)=>`<div class="therapy-item"><div class="therapy-top"><strong>Sesi ${history.length-i}</strong><span class="small">${esc(t.date||"")} • ${esc(t.time||"")}</span></div><div class="therapy-grid"><div><small>Tekanan Darah</small><b>${esc(t.bp||"-")}</b></div><div><small>Nyeri</small><b>${esc(t.painBefore??"-")} → ${esc(t.painAfter??"-")}</b></div><div><small>Respons</small><b>${esc(t.response||"-")}</b></div><div><small>Status</small><b>${esc(formatStatus(t.status))}</b></div></div>${t.therapy?`<div class="detail"><strong>Terapi</strong><br>${esc(t.therapy)}</div>`:""}${t.areas?`<div class="detail"><strong>Area / Titik</strong><br>${esc(t.areas)}</div>`:""}${t.notes?`<div class="detail"><strong>Catatan Terapis</strong><br>${esc(t.notes)}</div>`:""}${t.advice?`<div class="detail"><strong>Saran di Rumah</strong><br>${esc(t.advice)}</div>`:""}</div>`).join("")}
 function patientLogout(){patientData=null;if(painChart){painChart.destroy();painChart=null}if(bpChart){bpChart.destroy();bpChart=null}$("patientDashboard").classList.add("hidden");$("portalLogin").classList.remove("hidden");$("patientId").value="";$("patientPin").value="";showPortal()}
-$("regForm").onsubmit=async e=>{e.preventDefault();const btn=$("regBtn");btn.disabled=true;btn.textContent="Memproses...";try{const r=await apiPost({action:"register",name:$("name").value.trim(),age:$("age").value,gender:$("gender").value,phone:$("phone").value.trim(),address:$("address").value.trim(),complaint:$("complaint").value.trim(),history:$("history").value.trim()});if(!r.ok)throw Error(r.error||"Pendaftaran gagal.");$("regForm").classList.add("hidden");$("regSuccess").classList.remove("hidden");
-
-// Simpan ID dan PIN ke dataset
-$("regSuccess").dataset.patientId = r.id;
-$("regSuccess").dataset.patientPin = r.pin || "";
-
-// Tampilkan hasil
-$("regSuccess").innerHTML =
-  "<b>Pendaftaran berhasil!</b><br>" +
-  "ID Pasien: <strong>" + esc(r.id) + "</strong><br>" +
-  "PIN Pasien: <strong>" + esc(r.pin || "-") + "</strong>" +
-  "<br><br>" +
-  "⚠️ Simpan ID Pasien dan PIN ini. Keduanya diperlukan untuk membuka Dashboard Pasien ASDTY." +
-  "<br><br>" +
-  "<button type='button' id='openRegisteredPortalBtn' class='btn primary'>" +
-  "📊 Buka Dashboard Pasien" +
-  "</button>";
-
-$("openRegisteredPortalBtn").addEventListener(
-  "click",
-  openRegisteredPortal
-);"}catch(e){alert(e.message||"Pendaftaran gagal.")}finally{btn.disabled=false;btn.textContent="Kirim Pendaftaran"}};
-function openRegisteredPortal(){
-
-  const success = $("regSuccess");
-
-  if (!success) {
-    alert("Bagian hasil pendaftaran tidak ditemukan.");
-    return;
-  }
-
-  // Ambil ID dan PIN yang disimpan saat pendaftaran
-  const id = success.dataset.patientId || "";
-  const pin = success.dataset.patientPin || "";
-
-  if (!id || !pin) {
-    alert("ID Pasien atau PIN belum tersedia.");
-    return;
-  }
-
-  // Buka portal pasien
-  $("registerPage").classList.add("hidden");
-  $("portalPage").classList.remove("hidden");
-
-  // Isi otomatis
-  $("patientId").value = id;
-  $("patientPin").value = pin;
-
-  // Fokus ke tombol login
-  $("patientLoginBtn").focus();
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-$("patientPin").addEventListener("keydown",e=>{if(e.key==="Enter")loginPatient()});
+$("regForm").onsubmit=async e=>{e.preventDefault();const btn=$("regBtn");btn.disabled=true;btn.textContent="Memproses...";try{const r=await apiPost({action:"register",name:$("name").value.trim(),age:$("age").value,gender:$("gender").value,phone:$("phone").value.trim(),address:$("address").value.trim(),complaint:$("complaint").value.trim(),history:$("history").value.trim()});if(!r.ok)throw Error(r.error||"Pendaftaran gagal.");$("regForm").classList.add("hidden");$("regSuccess").classList.remove("hidden");$("regSuccess").dataset.patientId=r.id||"";$("regSuccess").dataset.patientPin=r.pin||"";$("regSuccess").innerHTML="<b>Pendaftaran berhasil!</b><br>ID Pasien: <strong>"+esc(r.id)+"</strong><br>PIN Pasien: <strong>"+esc(r.pin||"-")+"</strong><br><br>⚠️ Simpan ID Pasien dan PIN ini. Keduanya diperlukan untuk membuka Dashboard Pasien ASDTY.<br><br><button type='button' class='btn primary' onclick='openRegisteredPortal();return false;'>📊 Buka Dashboard Pasien</button>"}catch(e){alert(e.message||"Pendaftaran gagal.")}finally{btn.disabled=false;btn.textContent="Kirim Pendaftaran"}};
+function openRegisteredPortal(){const box=$("regSuccess");showPortal();$("patientId").value=box.dataset.patientId||"";$("patientPin").value=box.dataset.patientPin||"";setTimeout(()=>$("patientLoginBtn").focus(),300)}
+$("patientPin").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();loginPatient()}});
 (function(){if(new URLSearchParams(location.search).get("portal")==="1")showPortal()})();
-</script>
-</body>
-</html>
+</script></body></html>
