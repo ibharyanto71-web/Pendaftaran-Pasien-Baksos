@@ -10,6 +10,107 @@
 <body>
 <header class="top"><div><div style="font-size:11px;letter-spacing:2px;font-weight:900">ASDTY</div><h1>Bakti Pengobatan</h1><p>Dashboard • Pemeriksaan • Terapi • Jurnal • WhatsApp</p></div></header>
 <main>
+<section id="portal" class="hidden">
+
+  <div class="card" style="max-width:900px;margin:25px auto">
+
+    <span class="pill">PORTAL PASIEN ASDTY</span>
+
+    <h2>Dashboard Perkembangan Terapi</h2>
+
+    <p class="small">
+      Masukkan ID Pasien dan nomor WhatsApp untuk melihat perkembangan terapi Anda.
+    </p>
+
+    <div id="portalLogin">
+
+      <label>ID Pasien
+        <input
+          id="portalId"
+          type="text"
+          placeholder="Contoh: ASD-20260905-220204"
+          autocomplete="off">
+      </label>
+
+      <label>Nomor WhatsApp
+        <input
+          id="portalPhone"
+          type="tel"
+          inputmode="numeric"
+          placeholder="Contoh: 081234567890"
+          autocomplete="off">
+      </label>
+
+      <button
+        class="btn primary full"
+        onclick="patientPortalLogin()">
+        🔐 Lihat Perkembangan Saya
+      </button>
+
+      <div
+        id="portalMsg"
+        class="error hidden msg"
+        style="margin-top:10px">
+      </div>
+
+    </div>
+
+    <div id="portalDashboard" class="hidden">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+
+        <div>
+          <div class="small">Selamat datang</div>
+          <h2 id="portalName" style="margin:4px 0"></h2>
+          <div class="small" id="portalPatientId"></div>
+        </div>
+
+        <button
+          class="btn secondary"
+          onclick="portalLogout()">
+          Keluar
+        </button>
+
+      </div>
+
+      <div
+        id="portalStatus"
+        style="margin-top:18px">
+      </div>
+
+      <div
+        id="portalStats"
+        class="grid"
+        style="margin-top:15px">
+      </div>
+
+      <div class="box" style="margin-top:20px">
+
+        <b>📈 Perkembangan Nyeri</b>
+
+        <div
+          id="painChart"
+          style="margin-top:15px">
+        </div>
+
+      </div>
+
+      <div class="box" style="margin-top:20px">
+
+        <b>📋 Riwayat Terapi</b>
+
+        <div
+          id="portalHistory"
+          style="margin-top:15px">
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>  
 <section id="public" class="hidden">
 <div class="card">
 <span class="pill">REGISTRASI PASIEN</span>
@@ -48,7 +149,11 @@
 <div id="regSuccess" class="success hidden"></div>
 </div>
 </section>
-
+<button
+  class="btn secondary"
+  onclick="show('portal')">
+  📊 Portal Pasien
+</button>
 <section id="admin" class="hidden">
 <div id="adminLogin" class="card">
 <span class="pill">AREA PETUGAS</span><h2>Login Admin</h2><p class="small">Masukkan PIN petugas untuk membuka data pasien.</p>
@@ -160,4 +265,321 @@ $("regForm").onsubmit=async e=>{
 function refreshQR(){let u=location.origin+"/?daftar=1";$("appUrl").value=u;$("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="+encodeURIComponent(u)}
 function printQR(){let w=open("","_blank");w.document.write(`<html><body style="font-family:Arial;text-align:center;padding:30px"><h1>BAKTI PENGOBATAN ASDTY</h1><h2>SCAN UNTUK PENDAFTARAN</h2><img src="${$("qr").src}" style="width:350px"><p>Scan QR untuk mengisi data pasien</p><script>setTimeout(()=>print(),500)<\/script></body></html>`);w.document.close()}
 (function(){if(isAdminPath()){show("admin")}else{document.body.classList.add("public-mode");show("public")}})();
+async function patientPortalLogin(){
+
+  const id=$("portalId").value.trim();
+  const phone=$("portalPhone").value.trim();
+
+  const msg=$("portalMsg");
+
+  msg.classList.add("hidden");
+
+  if(!id || !phone){
+
+    msg.textContent="ID Pasien dan WhatsApp wajib diisi.";
+    msg.classList.remove("hidden");
+    return;
+
+  }
+
+  try{
+
+    const r=await apiGet("patientPortal",{
+      id:id,
+      phone:phone
+    });
+
+    if(!r.ok){
+      throw Error(
+        r.error ||
+        "Data pasien tidak ditemukan."
+      );
+    }
+
+    renderPatientPortal(r);
+
+  }catch(e){
+
+    msg.textContent=
+      e.message ||
+      "Tidak dapat membuka dashboard pasien.";
+
+    msg.classList.remove("hidden");
+
+  }
+
+}
+function renderPatientPortal(data){
+
+  const p=data.patient;
+  const s=data.summary;
+  const h=data.therapies || [];
+
+  $("portalLogin").classList.add("hidden");
+  $("portalDashboard").classList.remove("hidden");
+
+  $("portalName").textContent=p.name || "-";
+
+  $("portalPatientId").textContent=
+    "ID Pasien: " + (p.id || "-");
+
+  $("portalStatus").innerHTML=
+    '<div class="pill">'+
+    esc(s.latestStatus || p.status || "MENUNGGU")+
+    '</div>';
+
+  $("portalStats").innerHTML=`
+
+    <div class="box">
+      <div class="small">Total Kunjungan</div>
+      <div style="font-size:30px;font-weight:900">
+        ${s.totalVisits}
+      </div>
+      <div class="small">kali terapi</div>
+    </div>
+
+    <div class="box">
+      <div class="small">Nyeri Awal</div>
+      <div style="font-size:30px;font-weight:900">
+        ${s.painBefore || 0}
+      </div>
+      <div class="small">skala 0–10</div>
+    </div>
+
+    <div class="box">
+      <div class="small">Nyeri Terakhir</div>
+      <div style="font-size:30px;font-weight:900">
+        ${s.painAfter || 0}
+      </div>
+      <div class="small">skala 0–10</div>
+    </div>
+
+    <div class="box">
+      <div class="small">Perkembangan</div>
+      <div style="font-size:30px;font-weight:900">
+        ${s.painImprovement || 0}%
+      </div>
+      <div class="small">perubahan nyeri</div>
+    </div>
+
+  `;
+
+  renderPainChart(h);
+
+  renderPortalHistory(h);
+
+}
+function renderPainChart(history){
+
+  const el=$("painChart");
+
+  if(!history.length){
+
+    el.innerHTML=
+      '<div class="small">Belum ada data terapi.</div>';
+
+    return;
+
+  }
+
+  const data=[...history].reverse();
+
+  const max=10;
+
+  el.innerHTML=data.map((x,i)=>{
+
+    const before=Math.min(
+      max,
+      Math.max(0,Number(x.painBefore||0))
+    );
+
+    const after=Math.min(
+      max,
+      Math.max(0,Number(x.painAfter||0))
+    );
+
+    return `
+
+      <div style="margin-bottom:18px">
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          font-size:13px;
+          margin-bottom:5px">
+
+          <strong>Kunjungan ${i+1}</strong>
+
+          <span>${esc(x.date||"-")}</span>
+
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:70px 1fr 35px;
+          gap:8px;
+          align-items:center;
+          margin-bottom:5px">
+
+          <span>Awal</span>
+
+          <div style="
+            height:14px;
+            background:#eee;
+            border-radius:20px;
+            overflow:hidden">
+
+            <div style="
+              width:${before*10}%;
+              height:100%;
+              background:#7c3aed">
+            </div>
+
+          </div>
+
+          <strong>${before}</strong>
+
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:70px 1fr 35px;
+          gap:8px;
+          align-items:center">
+
+          <span>Setelah</span>
+
+          <div style="
+            height:14px;
+            background:#eee;
+            border-radius:20px;
+            overflow:hidden">
+
+            <div style="
+              width:${after*10}%;
+              height:100%;
+              background:#16a34a">
+            </div>
+
+          </div>
+
+          <strong>${after}</strong>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+function renderPortalHistory(history){
+
+  const el=$("portalHistory");
+
+  if(!history.length){
+
+    el.innerHTML=
+      '<div class="small">Belum ada riwayat terapi.</div>';
+
+    return;
+
+  }
+
+  el.innerHTML=history.map((x,i)=>`
+
+    <div style="
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:15px;
+      margin-bottom:12px">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        flex-wrap:wrap">
+
+        <strong>
+          Kunjungan ${history.length-i}
+        </strong>
+
+        <span class="small">
+          ${esc(x.date||"-")} ${esc(x.time||"")}
+        </span>
+
+      </div>
+
+      <div style="margin-top:10px">
+
+        <div>
+          <b>Tekanan darah:</b>
+          ${esc(x.bp||"-")}
+        </div>
+
+        <div>
+          <b>Nyeri:</b>
+          ${esc(x.painBefore||0)}
+          →
+          ${esc(x.painAfter||0)}
+        </div>
+
+        <div>
+          <b>Respons:</b>
+          ${esc(x.response||"-")}
+        </div>
+
+        <div style="margin-top:8px">
+          <b>Terapi:</b><br>
+          ${esc(x.therapy||"-")}
+        </div>
+
+        <div style="margin-top:8px">
+          <b>Area / Titik:</b><br>
+          ${esc(x.areas||"-")}
+        </div>
+
+        ${
+          x.notes
+          ? `
+          <div style="margin-top:8px">
+            <b>Catatan terapis:</b><br>
+            ${esc(x.notes)}
+          </div>
+          `
+          : ""
+        }
+
+        ${
+          x.advice
+          ? `
+          <div style="margin-top:8px">
+            <b>Saran di rumah:</b><br>
+            ${esc(x.advice)}
+          </div>
+          `
+          : ""
+        }
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+}
+function portalLogout(){
+
+  $("portalDashboard").classList.add("hidden");
+  $("portalLogin").classList.remove("hidden");
+
+  $("portalId").value="";
+  $("portalPhone").value="";
+
+  $("portalMsg").classList.add("hidden");
+
+  show("portal");
+
+}  
 </script></body></html>
