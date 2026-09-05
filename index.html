@@ -67,7 +67,7 @@
 </section>
 </main>
 <script>
-const API="1T8kWCBK5wA9LGiNV6D6tztTY9wPfmjRsDgCZTQfrahU";let all=[],current=null,adminToken=sessionStorage.getItem("asdty_admin_token")||"";const $=id=>document.getElementById(id);
+const API='https://script.google.com/macros/s/AKfycbwtrmRYWtd0g3HW3Igy7XBkgPs2prqcFWty1t3OdzTRlQYeHMDf0Qt0tjgkFTei-m4r/exec';let all=[],current=null,adminToken=sessionStorage.getItem("asdty_admin_token")||"";const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function msg(x){alert(x)}
 function isAdminPath(){return location.pathname.replace(/\/+$/,'')==='/admin'}
