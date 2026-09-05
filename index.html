@@ -80,6 +80,13 @@ async function loginPatient(){
 
   const idEl = document.getElementById("patientId");
   const pinEl = document.getElementById("patientPin");
+
+  alert(
+    "ID = [" + (idEl ? idEl.value : "ELEMENT TIDAK ADA") +
+    "]\nPIN = [" + (pinEl ? pinEl.value : "ELEMENT TIDAK ADA") + "]"
+  );
+  const idEl = document.getElementById("patientId");
+  const pinEl = document.getElementById("patientPin");
   const btn = document.getElementById("patientLoginBtn");
   const msg = document.getElementById("patientLoginMsg");
 
