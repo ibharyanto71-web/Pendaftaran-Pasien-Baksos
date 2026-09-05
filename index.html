@@ -257,12 +257,12 @@ footer{
       <p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p>
 
       <label for="patientId">ID Pasien</label>
-      <input id="patientId" type="text" autocomplete="username"
+      <input id="patientId" type="text" autocomplete="off"
              placeholder="Contoh: ASD-20260905-223733">
 
       <label for="patientPin">PIN Pasien</label>
       <input id="patientPin" type="password" inputmode="numeric"
-             maxlength="6" autocomplete="current-password"
+             maxlength="6" autocomplete="off"
              placeholder="6 digit PIN">
 
       <!-- PENTING: tombol langsung memanggil fungsi login -->
@@ -421,27 +421,44 @@ function showPortal(){
    LOGIN PASIEN
    ========================================================= */
 async function loginPatient(){
+  const btn = document.getElementById("patientLoginBtn");
+  const msg = document.getElementById("patientLoginMsg");
 
-  const idEl = $("patientId");
-  const pinEl = $("patientPin");
-  const btn = $("patientLoginBtn");
-  const msg = $("patientLoginMsg");
+  // Baca langsung dari elemen saat tombol diklik.
+  const idEl = document.getElementById("patientId");
+  const pinEl = document.getElementById("patientPin");
 
-  const id = String(idEl.value || "").trim();
-  const pin = String(pinEl.value || "").trim();
+  let id = idEl ? String(idEl.value || "") : "";
+  let pin = pinEl ? String(pinEl.value || "") : "";
+
+  // Hilangkan spasi biasa maupun spasi tersembunyi.
+  id = id.replace(/[\\s\\u200B-\\u200D\\uFEFF]/g, "");
+  pin = pin.replace(/[^0-9]/g, "");
 
   msg.classList.add("hidden");
   msg.textContent = "";
 
+  // Jika browser belum memasukkan nilai ke DOM, fokuskan kembali field
+  // agar pengguna dapat mengetik ulang secara normal.
   if(!id || !pin){
-    msg.textContent = "ID Pasien dan PIN wajib diisi.";
+    msg.innerHTML = "<b>Data belum terbaca.</b><br>ID Pasien dan PIN harus diisi. Silakan klik masing-masing kolom, ketik ulang ID dan PIN, lalu tekan Masuk Dashboard.";
     msg.classList.remove("hidden");
+    if(!id && idEl) idEl.focus();
+    else if(!pin && pinEl) pinEl.focus();
     return;
   }
 
-  if(!/^\d{6}$/.test(pin)){
+  if(!/^ASD-/i.test(id)){
+    msg.textContent = "Format ID Pasien tidak sesuai. Contoh: ASD-20260905-223733";
+    msg.classList.remove("hidden");
+    idEl.focus();
+    return;
+  }
+
+  if(!/^\\d{6}$/.test(pin)){
     msg.textContent = "PIN harus terdiri dari 6 digit angka.";
     msg.classList.remove("hidden");
+    pinEl.focus();
     return;
   }
 
@@ -449,43 +466,28 @@ async function loginPatient(){
   btn.textContent = "⏳ Memeriksa...";
 
   try{
-    console.log("LOGIN:", {id:id});
-
     const r = await apiPost({
-      action:"patientLogin",
-      id:id,
-      pin:pin
+      action: "patientLogin",
+      id: id,
+      pin: pin
     });
 
-    console.log("LOGIN RESPONSE:", r);
-
     if(!r || !r.ok){
-      throw new Error(
-        r && r.error
-          ? r.error
-          : "ID Pasien atau PIN salah."
-      );
+      throw new Error(r && r.error ? r.error : "ID Pasien atau PIN salah.");
     }
 
     patientData = r;
-
     renderPatientDashboard();
 
-    $("portalLogin").classList.add("hidden");
-    $("patientDashboard").classList.remove("hidden");
+    document.getElementById("portalLogin").classList.add("hidden");
+    document.getElementById("patientDashboard").classList.remove("hidden");
 
-    window.scrollTo({top:0,behavior:"smooth"});
+    window.scrollTo({top:0, behavior:"smooth"});
 
   }catch(e){
     console.error("LOGIN PASIEN:", e);
-
-    msg.textContent =
-      e && e.message
-        ? e.message
-        : "Tidak dapat membuka dashboard pasien.";
-
+    msg.textContent = e && e.message ? e.message : "Tidak dapat membuka dashboard pasien.";
     msg.classList.remove("hidden");
-
   }finally{
     btn.disabled = false;
     btn.textContent = "📊 Masuk Dashboard";
