@@ -306,49 +306,25 @@ function showDashboard(){
 async function loginPatient(event){
   if(event) event.preventDefault();
 
-  const form = $("patientLoginForm");
-  const idEl = $("patientId");
-  const pinEl = $("patientPin");
-  const btn = $("patientLoginBtn");
+  const idEl = document.getElementById("patientId");
+  const pinEl = document.getElementById("patientPin");
+  const btn = document.getElementById("patientLoginBtn");
 
   clearMsg();
 
-  /*
-    Gunakan FormData terlebih dahulu. Ini lebih aman terhadap
-    autofill browser dibanding hanya mengandalkan pembacaan
-    elemen secara langsung.
-  */
-  const fd = new FormData(form);
+  // BACA LANGSUNG NILAI INPUT
+  const id = (idEl.value || "").trim();
+  const pin = (pinEl.value || "").trim();
 
-  let id = String(fd.get("patientId") || "").trim();
-  let pin = String(fd.get("patientPin") || "").trim();
+  console.log("=== LOGIN PASIEN ===");
+  console.log("ID:", id);
+  console.log("PIN:", pin);
+  console.log("Panjang PIN:", pin.length);
 
-  /*
-    Fallback langsung dari DOM.
-    Tidak ada regex/validasi format ID di frontend.
-  */
-  if(!id) id = String(idEl.value || "").trim();
-  if(!pin) pin = String(pinEl.value || "").trim();
-
-  /*
-    Fallback terakhir: beri kesempatan browser menyelesaikan
-    autofill sebelum membaca ulang nilai input.
-  */
-  if(!id || !pin){
-    await new Promise(resolve => setTimeout(resolve, 150));
-
-    id = String(idEl.value || "").trim();
-    pin = String(pinEl.value || "").trim();
-  }
-
-  console.log("LOGIN INPUT:", {
-    id: id,
-    pinLength: pin.length
-  });
-
-  if(!id || !pin){
+  // Validasi hanya kosong
+  if(id === "" || pin === ""){
     showMsg(
-      "ID Pasien dan PIN belum terbaca. Klik kolom ID dan PIN, lalu coba lagi.",
+      "ID Pasien dan PIN wajib diisi.",
       "error"
     );
     return;
@@ -360,33 +336,43 @@ async function loginPatient(event){
   try{
 
     const result = await apiPost({
-      action:"patientLogin",
-      id:id,
-      pin:pin
+      action: "patientLogin",
+      id: id,
+      pin: pin
     });
 
-    console.log("RESPON LOGIN PASIEN:", result);
+    console.log("RESPON LOGIN:", result);
 
     if(!result || result.ok !== true){
-      throw new Error(
-        result && result.error
-          ? result.error
-          : "ID Pasien atau PIN salah."
+
+      showMsg(
+        result && result.message
+          ? result.message
+          : "ID Pasien atau PIN tidak sesuai.",
+        "error"
       );
+
+      btn.disabled = false;
+      btn.textContent = "📊 Masuk Dashboard";
+      return;
     }
 
-    patientData = result;
-    renderPatientDashboard();
+    // SIMPAN DATA PASIEN
+    patientData = result.data || result.patient || result;
+
+    // TAMPILKAN DASHBOARD
     showDashboard();
+
+    // Render data pasien
+    renderPatientDashboard();
 
   }catch(error){
 
-    console.error("LOGIN PASIEN:", error);
+    console.error("ERROR LOGIN:", error);
 
     showMsg(
-      error && error.message
-        ? error.message
-        : "Tidak dapat membuka Dashboard Pasien.",
+      "Terjadi kesalahan saat menghubungi server. " +
+      error.message,
       "error"
     );
 
