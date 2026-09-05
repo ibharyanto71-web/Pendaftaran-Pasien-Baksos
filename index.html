@@ -1,9 +1,643 @@
 <!doctype html>
 <html lang="id">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<section id="patientPortal">
+
+  <div class="portal-card">
+
+    <div class="portal-badge">
+      PORTAL PASIEN ASDTY
+    </div>
+
+    <h1>Dashboard Pasien</h1>
+
+    <p>
+      Masukkan ID Pasien dan PIN untuk melihat
+      perkembangan terapi Anda.
+    </p>
+
+    <label>ID Pasien</label>
+    <input
+      id="patientId"
+      type="text"
+      placeholder="Contoh: ASD-20260905-223733"
+    >
+
+    <label>PIN Pasien</label>
+    <input
+      id="patientPin"
+      type="password"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="6 digit PIN"
+    >
+
+    <button
+      id="patientLoginBtn"
+      onclick="loginPatient()"
+      class="btn-primary">
+      📊 Masuk Dashboard
+    </button>
+
+    <div id="patientLoginMsg"></div>
+
+  </div>
+
+</section>
+  <section id="patientDashboard" class="hidden">
+
+  <div class="dashboard-header">
+
+    <div>
+      <div class="portal-badge">
+        DASHBOARD PASIEN ASDTY
+      </div>
+
+      <h1 id="dashName">-</h1>
+
+      <p id="dashId">-</p>
+    </div>
+
+    <button onclick="patientLogout()" class="btn-secondary">
+      Keluar
+    </button>
+
+  </div>
+
+
+  <!-- RINGKASAN -->
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <span>STATUS</span>
+      <strong id="dashStatus">-</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>SESI TERAPI</span>
+      <strong id="dashSessions">0</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>NYERI TERAKHIR</span>
+      <strong id="dashPain">-</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>TERAPI TERAKHIR</span>
+      <strong id="dashLastDate">-</strong>
+    </div>
+
+  </div>
+
+
+  <!-- GRAFIK NYERI -->
+
+  <div class="dashboard-card">
+
+    <h2>📈 Perkembangan Nyeri</h2>
+
+    <p>
+      Perbandingan tingkat nyeri sebelum dan setelah terapi.
+    </p>
+
+    <div class="chart-box">
+      <canvas id="painChart"></canvas>
+    </div>
+
+  </div>
+
+
+  <!-- GRAFIK TEKANAN DARAH -->
+
+  <div class="dashboard-card">
+
+    <h2>🩺 Riwayat Tekanan Darah</h2>
+
+    <div class="chart-box">
+      <canvas id="bpChart"></canvas>
+    </div>
+
+  </div>
+
+
+  <!-- RIWAYAT TERAPI -->
+
+  <div class="dashboard-card">
+
+    <h2>📋 Riwayat Terapi</h2>
+
+    <div id="therapyHistory"></div>
+
+  </div>
+
+</section>
+  let patientData=null;
+let painChart=null;
+let bpChart=null;
+
+async function loginPatient(){
+
+  const id=$("patientId").value.trim();
+  const pin=$("patientPin").value.trim();
+
+  const btn=$("patientLoginBtn");
+  const msg=$("patientLoginMsg");
+
+  if(!id || !pin){
+
+    msg.innerHTML=
+      '<div class="error">ID Pasien dan PIN wajib diisi.</div>';
+
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent="Memeriksa...";
+
+  try{
+
+    const r=await apiPost({
+      action:"patientLogin",
+      id:id,
+      pin:pin
+    });
+
+    if(!r.ok){
+      throw Error(r.error||"Login gagal.");
+    }
+
+    patientData=r;
+
+    renderPatientDashboard();
+
+    $("patientPortal").classList.add("hidden");
+    $("patientDashboard").classList.remove("hidden");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }catch(e){
+
+    msg.innerHTML=
+      '<div class="error">'+esc(e.message)+'</div>';
+
+  }finally{
+
+    btn.disabled=false;
+    btn.textContent="📊 Masuk Dashboard";
+
+  }
+}
+  function renderPatientDashboard(){
+
+  const p=patientData.patient;
+  const therapies=patientData.therapies||[];
+
+  $("dashName").textContent=p.name||"-";
+  $("dashId").textContent="ID Pasien: "+(p.id||"-");
+
+  $("dashStatus").textContent=
+    formatStatus(p.status);
+
+  $("dashSessions").textContent=
+    therapies.length;
+
+  if(therapies.length){
+
+    const last=therapies[0];
+
+    $("dashPain").textContent=
+      (last.painAfter ?? "-")+"/10";
+
+    $("dashLastDate").textContent=
+      last.date||"-";
+
+  }else{
+
+    $("dashPain").textContent="-";
+    $("dashLastDate").textContent="-";
+
+  }
+
+  renderPainChart(therapies);
+  renderBPChart(therapies);
+  renderTherapyHistory(therapies);
+}
+  function renderPainChart(therapies){
+
+  const data=[...therapies].reverse();
+
+  const labels=data.map((t,i)=>
+    "Sesi "+(i+1)
+  );
+
+  const before=data.map(t=>
+    Number(t.painBefore)||0
+  );
+
+  const after=data.map(t=>
+    Number(t.painAfter)||0
+  );
+
+  const ctx=$("painChart").getContext("2d");
+
+  if(painChart){
+    painChart.destroy();
+  }
+
+  painChart=new Chart(ctx,{
+
+    type:"line",
+
+    data:{
+
+      labels:labels,
+
+      datasets:[
+
+        {
+          label:"Nyeri sebelum terapi",
+          data:before,
+          tension:.35,
+          borderWidth:3,
+          pointRadius:5
+        },
+
+        {
+          label:"Nyeri setelah terapi",
+          data:after,
+          tension:.35,
+          borderWidth:3,
+          pointRadius:5
+        }
+
+      ]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      maintainAspectRatio:false,
+
+      interaction:{
+        mode:"index",
+        intersect:false
+      },
+
+      plugins:{
+
+        tooltip:{
+          callbacks:{
+            title:function(items){
+
+              const index=items[0].dataIndex;
+
+              return data[index].date+
+                " • "+data[index].time;
+
+            }
+          }
+        },
+
+        legend:{
+          position:"bottom"
+        }
+
+      },
+
+      scales:{
+
+        y:{
+          min:0,
+          max:10,
+          title:{
+            display:true,
+            text:"Skala Nyeri"
+          }
+        }
+
+      }
+
+    }
+
+  });
+
+}
+  function renderBPChart(therapies){
+
+  const data=[...therapies]
+    .reverse()
+    .filter(t=>t.bp);
+
+  const labels=data.map((t,i)=>
+    "Sesi "+(i+1)
+  );
+
+  const systolic=[];
+  const diastolic=[];
+
+  data.forEach(t=>{
+
+    const m=String(t.bp)
+      .replace(/\s/g,"")
+      .match(/^(\d+)\/(\d+)$/);
+
+    if(m){
+
+      systolic.push(Number(m[1]));
+      diastolic.push(Number(m[2]));
+
+    }else{
+
+      systolic.push(null);
+      diastolic.push(null);
+
+    }
+
+  });
+
+  const ctx=$("bpChart").getContext("2d");
+
+  if(bpChart){
+    bpChart.destroy();
+  }
+
+  bpChart=new Chart(ctx,{
+
+    type:"line",
+
+    data:{
+
+      labels:labels,
+
+      datasets:[
+
+        {
+          label:"Sistolik",
+          data:systolic,
+          tension:.35,
+          borderWidth:3,
+          pointRadius:5
+        },
+
+        {
+          label:"Diastolik",
+          data:diastolic,
+          tension:.35,
+          borderWidth:3,
+          pointRadius:5
+        }
+
+      ]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      maintainAspectRatio:false,
+
+      interaction:{
+        mode:"index",
+        intersect:false
+      },
+
+      plugins:{
+        legend:{
+          position:"bottom"
+        }
+      },
+
+      scales:{
+        y:{
+          title:{
+            display:true,
+            text:"mmHg"
+          }
+        }
+
+      }
+
+    }
+
+  });
+
+}
+  function renderTherapyHistory(therapies){
+
+  const el=$("therapyHistory");
+
+  if(!therapies.length){
+
+    el.innerHTML=
+      '<div class="empty">Belum ada jurnal terapi.</div>';
+
+    return;
+  }
+
+  el.innerHTML=therapies.map((t,index)=>`
+
+    <div class="therapy-item">
+
+      <div class="therapy-top">
+
+        <strong>
+          Sesi ${therapies.length-index}
+        </strong>
+
+        <span>
+          ${esc(t.date||"")} • ${esc(t.time||"")}
+        </span>
+
+      </div>
+
+      <div class="therapy-grid">
+
+        <div>
+          <small>Tekanan Darah</small>
+          <b>${esc(t.bp||"-")}</b>
+        </div>
+
+        <div>
+          <small>Nyeri</small>
+          <b>
+            ${esc(t.painBefore??"-")}
+            →
+            ${esc(t.painAfter??"-")}
+          </b>
+        </div>
+
+        <div>
+          <small>Respons</small>
+          <b>${esc(t.response||"-")}</b>
+        </div>
+
+        <div>
+          <small>Status</small>
+          <b>${formatStatus(t.status)}</b>
+        </div>
+
+      </div>
+
+      ${t.therapy ? `
+        <div class="therapy-detail">
+          <strong>Terapi</strong>
+          <p>${esc(t.therapy)}</p>
+        </div>
+      `:""}
+
+      ${t.notes ? `
+        <div class="therapy-detail">
+          <strong>Catatan Terapis</strong>
+          <p>${esc(t.notes)}</p>
+        </div>
+      `:""}
+
+      ${t.advice ? `
+        <div class="therapy-detail">
+          <strong>Saran di Rumah</strong>
+          <p>${esc(t.advice)}</p>
+        </div>
+      `:""}
+
+    </div>
+
+  `).join("");
+
+}
+  function patientLogout(){
+
+  patientData=null;
+
+  if(painChart){
+    painChart.destroy();
+    painChart=null;
+  }
+
+  if(bpChart){
+    bpChart.destroy();
+    bpChart=null;
+  }
+
+  $("patientDashboard").classList.add("hidden");
+  $("patientPortal").classList.remove("hidden");
+
+  $("patientId").value="";
+  $("patientPin").value="";
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#5b21b6"><title>Bakti Pengobatan ASDTY V3.1</title>
 <style>
+  .chart-box{
+  position:relative;
+  width:100%;
+  height:330px;
+  margin-top:20px;
+}
+
+.dashboard-card{
+  background:#fff;
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(40,20,80,.08);
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin:20px 0;
+}
+
+.stat-card{
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 8px 25px rgba(40,20,80,.07);
+}
+
+.stat-card span{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  opacity:.65;
+  margin-bottom:8px;
+}
+
+.stat-card strong{
+  font-size:24px;
+}
+
+.therapy-item{
+  border:1px solid #eee;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:14px;
+}
+
+.therapy-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.therapy-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.therapy-grid small{
+  display:block;
+  opacity:.6;
+  margin-bottom:5px;
+}
+
+.therapy-detail{
+  margin-top:15px;
+  padding-top:15px;
+  border-top:1px solid #eee;
+}
+
+.therapy-detail p{
+  margin:6px 0 0;
+}
+
+.hidden{
+  display:none!important;
+}
+
+@media(max-width:700px){
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .therapy-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .chart-box{
+    height:280px;
+  }
+
+}
 *{box-sizing:border-box}body{margin:0;background:#f5f3ff;color:#18131f;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.top{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:18px max(15px,calc((100% - 980px)/2))}.top h1{margin:3px 0}.top p{margin:0;opacity:.85;font-size:13px}main{max-width:980px;margin:auto;padding:15px}.hidden{display:none!important}.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 6px 24px #2e106515}.pill{display:inline-block;background:#ede9fe;color:#5b21b6;padding:6px 10px;border-radius:99px;font-size:11px;font-weight:900}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#fff;padding:15px;border-radius:15px}.stat b{display:block;font-size:26px;color:#6d28d9}.stat span{font-size:11px;color:#756d80}.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:#6d28d9;color:#fff}.secondary{background:#fff;color:#4c1d95;border:1px solid #ddd6fe}.wa{background:#16a34a;color:#fff}.danger{background:#dc2626;color:#fff}.full{width:100%}label{display:block;font-size:13px;font-weight:750;margin-bottom:12px}input,select,textarea{width:100%;padding:11px;margin-top:5px;border:1px solid #ddd6fe;border-radius:10px;background:#faf9ff;font:inherit}.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar>*{flex:1}.patient{border:1px solid #eee;padding:13px;border-radius:13px;margin:9px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}.patient h3{margin:0 0 4px}.patient p{font-size:12px;color:#716879;margin:2px 0}.badge{font-size:10px;font-weight:900;border-radius:99px;padding:5px 8px;display:inline-block}.wait{background:#fef3c7;color:#92400e}.doing{background:#dbeafe;color:#1e40af}.done{background:#dcfce7;color:#166534}.box{background:#f8f7ff;padding:13px;border-radius:12px;margin-bottom:10px}.box b{font-size:10px;color:#7654a5;text-transform:uppercase}.box p{white-space:pre-wrap;line-height:1.45;margin:5px 0}.journal{overflow:hidden}.jhead{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:20px}.jbody{padding:18px}.success{background:#ecfdf5;border:1px solid #86efac;color:#166534;padding:13px;border-radius:12px}.error{background:#fef2f2;color:#991b1b;padding:13px;border-radius:12px}.center{text-align:center}.small{font-size:11px;color:#777}@media(max-width:650px){.grid,.stats{grid-template-columns:1fr 1fr}.patient{align-items:flex-start;flex-direction:column}.toolbar{flex-direction:column}}@media print{.top,.nav,.stats,.toolbar,.no-print{display:none!important}body{background:#fff}main{padding:0}.card{box-shadow:none}}
 .public-mode #admin{display:none!important}.public-mode #public{display:block!important}.public-mode #admin{display:none!important}.public-mode #journal{display:none!important}#adminPanel.hidden{display:none!important}</style>
 </head>
