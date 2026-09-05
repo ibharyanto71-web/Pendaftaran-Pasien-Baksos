@@ -73,7 +73,34 @@ function msg(x){alert(x)}
 function isAdminPath(){return location.pathname.replace(/\/+$/,'')==='/admin'}
 function show(id){document.querySelectorAll("main>section").forEach(s=>s.classList.add("hidden"));$(id).classList.remove("hidden");window.scrollTo(0,0);if(id==="admin")openAdmin()}
 async function apiPost(x){if(API.startsWith("__"))throw Error("URL Apps Script belum dipasang.");let r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(x)});return r.json()}
-async function apiGet(action,params={}){if(API.startsWith("__"))throw Error("URL Apps Script belum dipasang.");let u=API+"?action="+encodeURIComponent(action);Object.entries(params).forEach(([k,v])=>u+="&"+encodeURIComponent(k)+"="+encodeURIComponent(v));let r=await fetch(u,{cache:"no-store"});return r.json()}
+async function apiGet(action,params={}){
+  if(API.startsWith("__"))
+    throw Error("URL Apps Script belum dipasang.");
+
+  let u=API+"?action="+encodeURIComponent(action);
+
+  Object.entries(params).forEach(([k,v])=>{
+    u+="&"+encodeURIComponent(k)+"="+encodeURIComponent(v);
+  });
+
+  const r=await fetch(u,{cache:"no-store"});
+  const text=await r.text();
+
+  console.log("API URL:",u);
+  console.log("API STATUS:",r.status);
+  console.log("API RESPONSE:",text);
+
+  try{
+    return JSON.parse(text);
+  }catch(err){
+    throw Error(
+      "Server tidak mengirim JSON. Status "+
+      r.status+
+      ". Response: "+
+      text.substring(0,300)
+    );
+  }
+}
 async function adminLogin(){let pin=$("adminPin").value.trim();if(!pin)return;let b=document.querySelector('#adminLogin button');b.disabled=true;try{let r=await apiPost({action:"adminLogin",pin});if(!r.ok)throw Error(r.error||"PIN salah.");adminToken=r.token;sessionStorage.setItem("asdty_admin_token",adminToken);$("loginMsg").classList.add("hidden");openAdmin()}catch(e){$("loginMsg").textContent=e.message;$("loginMsg").classList.remove("hidden")}finally{b.disabled=false}}
 function adminLogout(){adminToken="";sessionStorage.removeItem("asdty_admin_token");$("adminPanel").classList.add("hidden");$("adminLogin").classList.remove("hidden");$("adminPin").value=""}
 async function openAdmin(){if(!isAdminPath()){location.replace("/admin");return}$("adminLogin").classList.remove("hidden");$("adminPanel").classList.add("hidden");if(adminToken){try{let r=await apiGet("authCheck",{token:adminToken});if(r.ok&&r.authenticated){$("adminLogin").classList.add("hidden");$("adminPanel").classList.remove("hidden");refreshQR();loadPatients();return}}catch(e){}adminLogout()}}
