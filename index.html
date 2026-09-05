@@ -41,7 +41,7 @@
     <div class="card">
       <span class="pill">LOGIN PASIEN</span><h2>Masuk ke Dashboard</h2>
       <p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p>
-      <label>ID Pasien<input id="patientId" type="text" autocomplete="off" placeholder="Contoh: ASD-20260905-223733"></label>
+      <label>ID Pasien<input id="patientId" type="text" autocomplete="username" placeholder="Contoh: ASD-20260905-223733"></label>
       <label>PIN Pasien<input id="patientPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="6 digit PIN"></label>
       <button id="patientLoginBtn" class="btn primary full" onclick="loginPatient()">📊 Masuk Dashboard</button>
       <div id="patientLoginMsg" class="hidden error" style="margin-top:10px"></div>
@@ -83,13 +83,13 @@ async function loginPatient(){
   const btn = document.getElementById("patientLoginBtn");
   const msg = document.getElementById("patientLoginMsg");
 
-  const id = idEl ? idEl.value.trim() : "";
-  const pin = pinEl ? pinEl.value.trim() : "";
+  const id = idEl ? String(idEl.value || "").trim() : "";
+  const pin = pinEl ? String(pinEl.value || "").trim() : "";
 
   msg.classList.add("hidden");
   msg.textContent = "";
 
-  if(!id || !pin){
+  if (!id || !pin) {
     msg.textContent = "ID Pasien dan PIN wajib diisi.";
     msg.classList.remove("hidden");
     return;
@@ -98,7 +98,7 @@ async function loginPatient(){
   btn.disabled = true;
   btn.textContent = "Memeriksa...";
 
-  try{
+  try {
 
     const r = await apiPost({
       action: "patientLogin",
@@ -106,7 +106,7 @@ async function loginPatient(){
       pin: pin
     });
 
-    if(!r || !r.ok){
+    if (!r || !r.ok) {
       throw new Error(
         r && r.error
           ? r.error
@@ -118,28 +118,34 @@ async function loginPatient(){
 
     renderPatientDashboard();
 
-    document.getElementById("portalLogin").classList.add("hidden");
-    document.getElementById("patientDashboard").classList.remove("hidden");
+    document
+      .getElementById("portalLogin")
+      .classList.add("hidden");
+
+    document
+      .getElementById("patientDashboard")
+      .classList.remove("hidden");
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
 
-  }catch(e){
+  } catch (e) {
+
+    console.error("LOGIN PASIEN:", e);
 
     msg.textContent =
       e.message || "Tidak dapat membuka dashboard pasien.";
 
     msg.classList.remove("hidden");
 
-  }finally{
+  } finally {
 
     btn.disabled = false;
     btn.textContent = "📊 Masuk Dashboard";
 
   }
-
 }
 function renderPatientDashboard(){const p=patientData.patient||{},h=patientData.therapies||[];$("dashName").textContent=p.name||"-";$("dashId").textContent="ID Pasien: "+(p.id||"-");$("dashStatus").textContent=formatStatus(p.status);$("dashSessions").textContent=h.length;if(h.length){const last=h[0],first=Number(h[h.length-1].painBefore||0),after=Number(last.painAfter||0);$("dashPain").textContent=(last.painAfter??"-")+"/10";$("dashImprovement").textContent=first>0?Math.max(0,Math.round((first-after)/first*100))+"%":"-"}else{$("dashPain").textContent="-";$("dashImprovement").textContent="-"}renderPainChart(h);renderBPChart(h);renderTherapyHistory(h)}
 function renderPainChart(history){const canvas=$("painChart"),data=[...history].reverse();if(painChart){painChart.destroy();painChart=null}if(!data.length){canvas.parentElement.innerHTML='<div class="small">Belum ada data terapi.</div>';return}painChart=new Chart(canvas.getContext("2d"),{type:"line",data:{labels:data.map((t,i)=>"Sesi "+(i+1)),datasets:[{label:"Nyeri sebelum",data:data.map(t=>Number(t.painBefore)||0),tension:.35,borderWidth:3,pointRadius:5},{label:"Nyeri setelah",data:data.map(t=>Number(t.painAfter)||0),tension:.35,borderWidth:3,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{title:items=>{const t=data[items[0].dataIndex];return (t.date||"")+" • "+(t.time||"")}}}},scales:{y:{min:0,max:10,title:{display:true,text:"Skala Nyeri"}}}}})}
