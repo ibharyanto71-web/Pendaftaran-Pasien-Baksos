@@ -5,340 +5,207 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal Pasien ASDTY</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
-  background:#f5f1ff;
-  color:#171126;
+  background:#f4f1ff;
+  color:#111827;
 }
-.wrap{
-  width:min(925px,calc(100% - 28px));
-  margin:28px auto 40px;
-}
+.wrap{max-width:925px;margin:0 auto;padding:28px 18px 40px}
 .hero{
-  background:linear-gradient(135deg,#5520b7,#842df0);
-  color:#fff;
-  padding:28px 30px;
-  border-radius:0 0 22px 22px;
-  box-shadow:0 12px 30px rgba(91,42,180,.15);
+  background:linear-gradient(120deg,#5b21b6,#7c2be8);
+  color:#fff;border-radius:0 0 22px 22px;
+  padding:28px 30px;margin-bottom:18px;
 }
-.hero small{
-  font-weight:800;
-  letter-spacing:2px;
-}
-.hero h1{margin:8px 0 4px;font-size:28px}
-.hero p{margin:0;font-size:15px}
+.hero small{font-weight:800;letter-spacing:2px}
+.hero h1{margin:8px 0 5px;font-size:29px}
+.hero p{margin:0;font-size:16px}
 .card{
-  background:#fff;
-  margin-top:18px;
-  padding:28px;
-  border-radius:22px;
-  box-shadow:0 10px 28px rgba(54,30,105,.08);
+  background:#fff;border-radius:22px;padding:28px;
+  margin:16px 0;box-shadow:0 12px 30px rgba(76,29,149,.08);
 }
 .pill{
-  display:inline-block;
-  background:#eee5ff;
-  color:#5a20ba;
-  padding:9px 14px;
-  border-radius:30px;
-  font-weight:800;
-  font-size:12px;
+  display:inline-block;background:#eee5ff;color:#5b21b6;
+  border-radius:999px;padding:9px 14px;font-size:12px;font-weight:800;
 }
-h2{margin:14px 0 8px;font-size:25px}
-h3{margin:0 0 12px}
-.small{color:#6d6380;font-size:13px;line-height:1.6}
-label{
-  display:block;
-  font-weight:700;
-  margin:16px 0 7px;
+h2{margin:14px 0 10px;font-size:26px}
+h3{margin:8px 0 16px}
+.small{color:#64748b;font-size:14px;line-height:1.6}
+label{display:block;font-weight:700;margin:16px 0 7px}
+input,textarea,select{
+  width:100%;padding:15px;border:1px solid #d8c8ff;
+  border-radius:12px;background:#fcfbff;font-size:16px;outline:none;
 }
-input,select,textarea{
-  width:100%;
-  border:1px solid #d9c8ff;
-  border-radius:12px;
-  padding:14px;
-  font-size:16px;
-  outline:none;
-  background:#fcfbff;
-}
-input:focus,select:focus,textarea:focus{
-  border-color:#7628df;
-  box-shadow:0 0 0 3px rgba(118,40,223,.1);
-}
-textarea{min-height:100px;resize:vertical}
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:0 10px;
+input:focus,textarea:focus,select:focus{
+  border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12)
 }
 .btn{
-  width:100%;
-  border:0;
-  border-radius:12px;
-  padding:15px;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-  margin-top:16px;
+  width:100%;border:0;border-radius:12px;padding:16px;
+  font-size:17px;font-weight:800;cursor:pointer;margin-top:18px;
 }
-.btn.primary{
-  background:#7025df;
-  color:#fff;
+.primary{background:#7025dc;color:white}
+.primary:hover{background:#5f1fc0}
+.secondary{
+  background:white;color:#5b21b6;border:1px solid #d8c8ff
 }
-.btn.secondary{
-  background:#fff;
-  color:#5620b7;
-  border:1px solid #d8c5ff;
-}
-.btn:disabled{opacity:.65;cursor:wait}
+.btn:disabled{opacity:.6;cursor:not-allowed}
 .msg{
-  margin-top:12px;
-  padding:12px 14px;
-  border-radius:11px;
-  background:#fff0f0;
-  color:#c62828;
-  border:1px solid #ffcaca;
+  margin-top:14px;padding:13px;border-radius:11px;
+  font-size:15px;display:none
 }
+.msg.error{display:block;background:#fff0f0;color:#dc2626;border:1px solid #fecaca}
+.msg.success{display:block;background:#effdf5;color:#15803d;border:1px solid #bbf7d0}
 .hidden{display:none!important}
-.success{
-  padding:20px;
-  border-radius:14px;
-  background:#f1fff5;
-  border:1px solid #bce8c8;
-  color:#175b2b;
-  line-height:1.7;
+.center{text-align:center}
+.dashboard-head{
+  background:linear-gradient(120deg,#5b21b6,#7c2be8);
+  color:white;border-radius:18px;padding:22px;margin-bottom:18px
 }
-.success strong{color:#4c19aa}
-.top-summary{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-top:18px;
+.dashboard-head h2{margin:7px 0 4px}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0
 }
 .stat{
-  padding:16px;
-  border:1px solid #eadfff;
-  border-radius:15px;
-  background:#fbf9ff;
+  background:#fff;border:1px solid #eee5ff;border-radius:16px;
+  padding:18px;text-align:center
 }
-.stat small{display:block;color:#766b8d;margin-bottom:7px}
-.stat b{font-size:22px;color:#5220ad}
-.chart-card{
-  margin-top:16px;
-  padding:18px;
-  border:1px solid #eadfff;
-  border-radius:16px;
+.stat b{display:block;font-size:24px;color:#5b21b6;margin-top:6px}
+.chart-box{
+  height:300px;position:relative;margin-top:12px
 }
-.chart-box{height:280px}
 .therapy-item{
-  margin-top:14px;
-  padding:17px;
-  border:1px solid #e8ddfb;
-  border-radius:15px;
-  background:#fff;
+  border:1px solid #e7defb;border-radius:15px;padding:17px;
+  margin:12px 0;background:#fcfbff
 }
-.therapy-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-  margin-bottom:13px;
-}
+.therapy-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
 .therapy-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px
 }
 .therapy-grid>div{
-  background:#faf8ff;
-  border-radius:10px;
-  padding:11px;
+  background:#fff;border-radius:10px;padding:11px;border:1px solid #eee
 }
-.therapy-grid small{display:block;color:#766b8d;margin-bottom:5px}
+.therapy-grid small{display:block;color:#64748b;margin-bottom:5px}
 .detail{
-  margin-top:10px;
-  padding:11px 13px;
-  background:#faf8ff;
-  border-radius:10px;
-  line-height:1.55;
+  margin-top:10px;padding:11px;background:#fff;border-radius:10px;
+  border-left:4px solid #7c3aed
 }
-footer{
-  text-align:center;
-  color:#766b8d;
-  font-size:13px;
-  margin-top:22px;
-}
+footer{text-align:center;color:#64748b;font-size:13px;margin-top:22px}
 @media(max-width:700px){
-  .wrap{width:min(100% - 18px,925px);margin-top:10px}
-  .hero{padding:22px 20px}
-  .hero h1{font-size:23px}
-  .card{padding:20px}
-  .grid2,.top-summary,.therapy-grid{grid-template-columns:1fr}
-  .therapy-top{display:block}
-  .therapy-top .small{margin-top:5px}
+  .wrap{padding:16px 12px 30px}
+  .hero{padding:23px 20px}
+  .hero h1{font-size:24px}
+  .card{padding:20px;border-radius:18px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .therapy-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-box{height:250px}
 }
 </style>
 </head>
-
 <body>
 <div class="wrap">
 
-  <div class="hero">
+  <section class="hero">
     <small>PORTAL PASIEN ASDTY</small>
     <h1>Dashboard Perkembangan Terapi</h1>
     <p>Pantau perjalanan terapi Anda dari waktu ke waktu.</p>
-  </div>
-
-  <!-- HALAMAN PENDAFTARAN -->
-  <section id="registerPage">
-    <div class="card">
-      <span class="pill">REGISTRASI PASIEN</span>
-      <h2>Daftar Pelayanan Bakti Pengobatan</h2>
-      <p class="small">
-        Isi data berikut. Setelah berhasil, Anda akan mendapatkan ID Pasien dan PIN
-        untuk mengakses Dashboard Pasien ASDTY.
-      </p>
-
-      <form id="regForm">
-        <div class="grid2">
-          <div>
-            <label for="name">Nama Lengkap *</label>
-            <input id="name" type="text" placeholder="Nama lengkap" required>
-          </div>
-          <div>
-            <label for="age">Umur *</label>
-            <input id="age" type="number" min="1" max="120" placeholder="Umur" required>
-          </div>
-          <div>
-            <label for="gender">Jenis Kelamin *</label>
-            <select id="gender" required>
-              <option value="">Pilih</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>
-          <div>
-            <label for="phone">WhatsApp *</label>
-            <input id="phone" type="tel" placeholder="08xxxxxxxxxx" required>
-          </div>
-        </div>
-
-        <label for="address">Alamat tempat tinggal *</label>
-        <textarea id="address" placeholder="Alamat tempat tinggal" required></textarea>
-
-        <label for="complaint">Keluhan Utama *</label>
-        <textarea id="complaint" placeholder="Keluhan yang dirasakan" required></textarea>
-
-        <label for="history">Riwayat Penyakit / Kondisi Penting</label>
-        <textarea id="history" placeholder="Bila ada, tuliskan riwayat penyakit atau kondisi penting"></textarea>
-
-        <button id="regBtn" class="btn primary" type="submit">Kirim Pendaftaran</button>
-      </form>
-
-      <div id="regSuccess" class="success hidden"></div>
-    </div>
-
-    <div class="card" style="text-align:center">
-      <span class="pill">SUDAH TERDAFTAR?</span>
-      <h2 style="font-size:22px">Ingin melihat perkembangan terapi?</h2>
-      <p class="small">Masuk menggunakan ID Pasien dan PIN Anda.</p>
-      <button class="btn secondary" type="button" onclick="showPortal()">📊 Buka Dashboard Pasien</button>
-    </div>
   </section>
 
-  <!-- LOGIN PASIEN -->
-  <section id="portalPage" class="hidden">
-    <div id="portalLogin" class="card">
-      <span class="pill">LOGIN PASIEN</span>
-      <h2>Masuk ke Dashboard</h2>
-      <p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p>
+  <!-- HALAMAN LOGIN -->
+  <section id="portalLogin" class="card">
+    <span class="pill">LOGIN PASIEN</span>
+    <h2>Masuk ke Dashboard</h2>
+    <p class="small">Gunakan ID Pasien dan PIN yang diberikan setelah pendaftaran.</p>
 
-      <label for="patientId">ID Pasien</label>
-      <input id="patientId" type="text" autocomplete="off"
-             placeholder="Contoh: ASD-20260905-223733">
+    <label for="patientId">ID Pasien</label>
+    <input id="patientId" type="text" autocomplete="username"
+           placeholder="Contoh: ASD-20260905-223733">
 
-      <label for="patientPin">PIN Pasien</label>
-      <input id="patientPin" type="password" inputmode="numeric"
-             maxlength="6" autocomplete="off"
-             placeholder="6 digit PIN">
+    <label for="patientPin">PIN Pasien</label>
+    <input id="patientPin" type="password" inputmode="numeric"
+           autocomplete="current-password" maxlength="20"
+           placeholder="Masukkan PIN">
 
-      <!-- PENTING: tombol langsung memanggil fungsi login -->
-      <button id="patientLoginBtn" class="btn primary" type="button" onclick="loginPatient()">
-        📊 Masuk Dashboard
-      </button>
+    <button id="patientLoginBtn" type="button" class="btn primary">
+      📊 Masuk Dashboard
+    </button>
 
-      <div id="patientLoginMsg" class="msg hidden"></div>
+    <div id="patientLoginMsg" class="msg"></div>
 
-      <button class="btn secondary" type="button" onclick="showRegister()">
-        ← Kembali ke Pendaftaran
-      </button>
+    <button id="backRegisterBtn" type="button" class="btn secondary">
+      ← Kembali ke Pendaftaran
+    </button>
+  </section>
+
+  <!-- DASHBOARD PASIEN -->
+  <section id="patientDashboard" class="hidden">
+
+    <div class="dashboard-head">
+      <span class="pill">DASHBOARD PASIEN ASDTY</span>
+      <h2 id="dashName">-</h2>
+      <div id="dashId">ID Pasien: -</div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="patientDashboard" class="hidden">
-
-      <div class="card">
-        <span class="pill">DASHBOARD PASIEN ASDTY</span>
-        <h2 id="dashName">-</h2>
-        <p class="small" id="dashId">ID Pasien: -</p>
-
-        <div class="top-summary">
-          <div class="stat">
-            <small>Status</small>
-            <b id="dashStatus">-</b>
-          </div>
-          <div class="stat">
-            <small>Total Sesi</small>
-            <b id="dashSessions">0</b>
-          </div>
-          <div class="stat">
-            <small>Nyeri Terakhir</small>
-            <b id="dashPain">-</b>
-          </div>
-          <div class="stat">
-            <small>Perbaikan Nyeri</small>
-            <b id="dashImprovement">-</b>
-          </div>
-        </div>
+    <div class="stats">
+      <div class="stat">
+        Status
+        <b id="dashStatus">-</b>
       </div>
-
-      <div class="card">
-        <h3>📈 Perkembangan Nyeri</h3>
-        <div class="chart-card">
-          <div class="chart-box"><canvas id="painChart"></canvas></div>
-        </div>
+      <div class="stat">
+        Sesi Terapi
+        <b id="dashSessions">0</b>
       </div>
-
-      <div class="card">
-        <h3>🩺 Tekanan Darah</h3>
-        <div class="chart-card">
-          <div class="chart-box"><canvas id="bpChart"></canvas></div>
-        </div>
+      <div class="stat">
+        Nyeri Terakhir
+        <b id="dashPain">-</b>
       </div>
-
-      <div class="card">
-        <h3>📋 Riwayat Terapi</h3>
-        <div id="therapyHistory"></div>
-      </div>
-
-      <div class="card">
-        <button class="btn secondary" type="button" onclick="patientLogout()">
-          Keluar dari Dashboard
-        </button>
+      <div class="stat">
+        Perubahan
+        <b id="dashImprovement">-</b>
       </div>
     </div>
+
+    <div class="card">
+      <h3>📈 Perkembangan Skala Nyeri</h3>
+      <p class="small">Perbandingan nyeri sebelum dan sesudah terapi.</p>
+      <div class="chart-box"><canvas id="painChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>🩺 Tekanan Darah</h3>
+      <p class="small">Riwayat tekanan darah yang tercatat dalam jurnal terapi.</p>
+      <div class="chart-box"><canvas id="bpChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>📋 Riwayat Terapi</h3>
+      <div id="therapyHistory"></div>
+    </div>
+
+    <button id="logoutBtn" type="button" class="btn secondary">
+      Keluar dari Dashboard
+    </button>
   </section>
 
   <footer>ASDTY • Bakti Pengobatan • Dashboard Pasien</footer>
 </div>
 
 <script>
-/* =========================================================
-   CONFIG
-   ========================================================= */
+"use strict";
+
+/*
+  ============================================================
+  PORTAL PASIEN ASDTY
+  ============================================================
+  PERBAIKAN UTAMA:
+  1. Tidak ada lagi validasi format ID di sisi browser.
+  2. ID Pasien dikirim PERSIS seperti yang diketik pasien.
+  3. PIN dikirim PERSIS seperti yang diketik pasien.
+  4. Tombol login memakai addEventListener sehingga tidak
+     bergantung pada atribut onclick/urutan script HTML.
+*/
+
 const API = "https://script.google.com/macros/s/AKfycbwtrmRYWtd0g3HW3Igy7XBkgPs2prqcFWty1t3OdzTRlQYeHMDf0Qt0tjgkFTei-m4r/exec";
 
 let patientData = null;
@@ -347,8 +214,8 @@ let bpChart = null;
 
 const $ = id => document.getElementById(id);
 
-function esc(s){
-  return String(s ?? "").replace(/[&<>"']/g, c => ({
+function esc(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
@@ -357,27 +224,36 @@ function esc(s){
   }[c]));
 }
 
-function formatStatus(s){
-  const v = String(s || "MENUNGGU").toUpperCase();
+function formatStatus(value){
+  const v = String(value || "MENUNGGU").toUpperCase();
   if(v === "SEDANG_TERAPI") return "Sedang terapi";
   if(v === "SELESAI") return "Selesai";
   return "Menunggu";
 }
 
-/* =========================================================
-   API
-   ========================================================= */
-async function apiPost(data){
+function showMsg(text, type="error"){
+  const el = $("patientLoginMsg");
+  el.textContent = text || "";
+  el.className = "msg " + type;
+}
+
+function clearMsg(){
+  const el = $("patientLoginMsg");
+  el.textContent = "";
+  el.className = "msg";
+}
+
+async function apiPost(payload){
   if(!API || API.startsWith("__")){
     throw new Error("URL Apps Script belum dipasang.");
   }
 
   const response = await fetch(API, {
-    method: "POST",
-    headers: {
+    method:"POST",
+    headers:{
       "Content-Type":"text/plain;charset=utf-8"
     },
-    body: JSON.stringify(data)
+    body:JSON.stringify(payload)
   });
 
   const text = await response.text();
@@ -385,8 +261,7 @@ async function apiPost(data){
   let result;
   try{
     result = JSON.parse(text);
-  }catch(err){
-    console.error("Response bukan JSON:", text);
+  }catch(error){
     throw new Error(
       "Server tidak mengirim JSON. Status " +
       response.status +
@@ -398,67 +273,37 @@ async function apiPost(data){
   return result;
 }
 
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-function showRegister(){
-  $("portalPage").classList.add("hidden");
-  $("registerPage").classList.remove("hidden");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
 function showPortal(){
-  $("registerPage").classList.add("hidden");
-  $("portalPage").classList.remove("hidden");
-  $("portalLogin").classList.remove("hidden");
   $("patientDashboard").classList.add("hidden");
-  $("patientLoginMsg").classList.add("hidden");
-  setTimeout(() => $("patientId").focus(), 100);
+  $("portalLogin").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+  setTimeout(() => $("patientId").focus(),100);
+}
+
+function showDashboard(){
+  $("portalLogin").classList.add("hidden");
+  $("patientDashboard").classList.remove("hidden");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* =========================================================
-   LOGIN PASIEN
-   ========================================================= */
 async function loginPatient(){
-  const btn = document.getElementById("patientLoginBtn");
-  const msg = document.getElementById("patientLoginMsg");
 
-  // Baca langsung dari elemen saat tombol diklik.
-  const idEl = document.getElementById("patientId");
-  const pinEl = document.getElementById("patientPin");
+  const idEl = $("patientId");
+  const pinEl = $("patientPin");
+  const btn = $("patientLoginBtn");
 
-  let id = idEl ? String(idEl.value || "") : "";
-  let pin = pinEl ? String(pinEl.value || "") : "";
+  /*
+    PENTING:
+    Tidak ada regex/cek "format ID" di sini.
+    ID dikirim apa adanya ke Apps Script.
+  */
+  const id = String(idEl.value || "").trim();
+  const pin = String(pinEl.value || "").trim();
 
-  // Hilangkan spasi biasa maupun spasi tersembunyi.
-  id = id.replace(/[\\s\\u200B-\\u200D\\uFEFF]/g, "");
-  pin = pin.replace(/[^0-9]/g, "");
+  clearMsg();
 
-  msg.classList.add("hidden");
-  msg.textContent = "";
-
-  // Jika browser belum memasukkan nilai ke DOM, fokuskan kembali field
-  // agar pengguna dapat mengetik ulang secara normal.
   if(!id || !pin){
-    msg.innerHTML = "<b>Data belum terbaca.</b><br>ID Pasien dan PIN harus diisi. Silakan klik masing-masing kolom, ketik ulang ID dan PIN, lalu tekan Masuk Dashboard.";
-    msg.classList.remove("hidden");
-    if(!id && idEl) idEl.focus();
-    else if(!pin && pinEl) pinEl.focus();
-    return;
-  }
-
-  if(!/^ASD-/i.test(id)){
-    msg.textContent = "Format ID Pasien tidak sesuai. Contoh: ASD-20260905-223733";
-    msg.classList.remove("hidden");
-    idEl.focus();
-    return;
-  }
-
-  if(!/^\\d{6}$/.test(pin)){
-    msg.textContent = "PIN harus terdiri dari 6 digit angka.";
-    msg.classList.remove("hidden");
-    pinEl.focus();
+    showMsg("ID Pasien dan PIN wajib diisi.","error");
     return;
   }
 
@@ -466,80 +311,98 @@ async function loginPatient(){
   btn.textContent = "⏳ Memeriksa...";
 
   try{
-    const r = await apiPost({
-      action: "patientLogin",
-      id: id,
-      pin: pin
+
+    const result = await apiPost({
+      action:"patientLogin",
+      id:id,
+      pin:pin
     });
 
-    if(!r || !r.ok){
-      throw new Error(r && r.error ? r.error : "ID Pasien atau PIN salah.");
+    console.log("RESPON LOGIN PASIEN:", result);
+
+    if(!result || result.ok !== true){
+
+      const serverError =
+        result && result.error
+          ? result.error
+          : "ID Pasien atau PIN salah.";
+
+      throw new Error(serverError);
     }
 
-    patientData = r;
+    patientData = result;
+
     renderPatientDashboard();
+    showDashboard();
 
-    document.getElementById("portalLogin").classList.add("hidden");
-    document.getElementById("patientDashboard").classList.remove("hidden");
+  }catch(error){
 
-    window.scrollTo({top:0, behavior:"smooth"});
+    console.error("LOGIN PASIEN:", error);
 
-  }catch(e){
-    console.error("LOGIN PASIEN:", e);
-    msg.textContent = e && e.message ? e.message : "Tidak dapat membuka dashboard pasien.";
-    msg.classList.remove("hidden");
+    showMsg(
+      error && error.message
+        ? error.message
+        : "Tidak dapat membuka Dashboard Pasien.",
+      "error"
+    );
+
   }finally{
+
     btn.disabled = false;
     btn.textContent = "📊 Masuk Dashboard";
+
   }
 }
 
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
 function renderPatientDashboard(){
 
-  const p = patientData && patientData.patient
-    ? patientData.patient
-    : {};
-
-  const h = patientData && Array.isArray(patientData.therapies)
+  const p = patientData.patient || {};
+  const history = Array.isArray(patientData.therapies)
     ? patientData.therapies
     : [];
 
   $("dashName").textContent = p.name || "-";
   $("dashId").textContent = "ID Pasien: " + (p.id || "-");
   $("dashStatus").textContent = formatStatus(p.status);
-  $("dashSessions").textContent = h.length;
+  $("dashSessions").textContent = history.length;
 
-  if(h.length){
+  if(history.length){
 
-    const last = h[0];
-    const first = Number(h[h.length - 1].painBefore || 0);
-    const after = Number(last.painAfter || 0);
+    const latest = history[0];
+
+    const first = Number(
+      history[history.length - 1].painBefore || 0
+    );
+
+    const after = Number(latest.painAfter || 0);
 
     $("dashPain").textContent =
-      (last.painAfter ?? "-") + "/10";
+      latest.painAfter !== undefined &&
+      latest.painAfter !== null &&
+      latest.painAfter !== ""
+        ? latest.painAfter + "/10"
+        : "-";
 
     $("dashImprovement").textContent =
       first > 0
-        ? Math.max(0, Math.round((first-after)/first*100)) + "%"
+        ? Math.max(
+            0,
+            Math.round((first - after) / first * 100)
+          ) + "%"
         : "-";
 
   }else{
 
     $("dashPain").textContent = "-";
     $("dashImprovement").textContent = "-";
+
   }
 
-  renderPainChart(h);
-  renderBPChart(h);
-  renderTherapyHistory(h);
+  renderPainChart(history);
+  renderBPChart(history);
+  renderTherapyHistory(history);
 }
 
-/* =========================================================
-   CHART NYERI
-   ========================================================= */
 function renderPainChart(history){
 
   const canvas = $("painChart");
@@ -551,15 +414,22 @@ function renderPainChart(history){
     painChart = null;
   }
 
+  box.innerHTML = "";
+
   if(!data.length){
-    box.innerHTML = '<div class="small">Belum ada data terapi.</div>';
+    box.innerHTML =
+      '<div class="small">Belum ada data terapi.</div>';
     return;
   }
 
-  painChart = new Chart(canvas.getContext("2d"), {
+  const newCanvas = document.createElement("canvas");
+  newCanvas.id = "painChart";
+  box.appendChild(newCanvas);
+
+  painChart = new Chart(newCanvas.getContext("2d"),{
     type:"line",
     data:{
-      labels:data.map((t,i) => "Sesi " + (i+1)),
+      labels:data.map((t,i) => "Sesi " + (i + 1)),
       datasets:[
         {
           label:"Nyeri sebelum",
@@ -609,14 +479,10 @@ function renderPainChart(history){
   });
 }
 
-/* =========================================================
-   CHART TEKANAN DARAH
-   ========================================================= */
 function renderBPChart(history){
 
   const canvas = $("bpChart");
   const box = canvas.parentElement;
-
   const data = [...history]
     .reverse()
     .filter(t => t.bp);
@@ -626,27 +492,36 @@ function renderBPChart(history){
     bpChart = null;
   }
 
+  box.innerHTML = "";
+
   if(!data.length){
-    box.innerHTML = '<div class="small">Belum ada data tekanan darah.</div>';
+    box.innerHTML =
+      '<div class="small">Belum ada data tekanan darah.</div>';
     return;
   }
+
+  const newCanvas = document.createElement("canvas");
+  newCanvas.id = "bpChart";
+  box.appendChild(newCanvas);
 
   const systolic = [];
   const diastolic = [];
 
   data.forEach(t => {
-    const m = String(t.bp)
+
+    const match = String(t.bp)
       .replace(/\s/g,"")
       .match(/^(\d+)\/(\d+)$/);
 
-    systolic.push(m ? Number(m[1]) : null);
-    diastolic.push(m ? Number(m[2]) : null);
+    systolic.push(match ? Number(match[1]) : null);
+    diastolic.push(match ? Number(match[2]) : null);
+
   });
 
-  bpChart = new Chart(canvas.getContext("2d"), {
+  bpChart = new Chart(newCanvas.getContext("2d"),{
     type:"line",
     data:{
-      labels:data.map((t,i) => "Sesi " + (i+1)),
+      labels:data.map((t,i) => "Sesi " + (i + 1)),
       datasets:[
         {
           label:"Sistolik",
@@ -694,9 +569,6 @@ function renderBPChart(history){
   });
 }
 
-/* =========================================================
-   RIWAYAT TERAPI
-   ========================================================= */
 function renderTherapyHistory(history){
 
   const el = $("therapyHistory");
@@ -707,71 +579,82 @@ function renderTherapyHistory(history){
     return;
   }
 
-  el.innerHTML = history.map((t,i) => `
-    <div class="therapy-item">
+  el.innerHTML = history.map((t,i) => {
 
-      <div class="therapy-top">
-        <strong>Sesi ${history.length-i}</strong>
-        <span class="small">
-          ${esc(t.date || "")} • ${esc(t.time || "")}
-        </span>
+    const sessionNumber = history.length - i;
+
+    return `
+      <div class="therapy-item">
+
+        <div class="therapy-top">
+          <strong>Sesi ${sessionNumber}</strong>
+          <span class="small">
+            ${esc(t.date || "")} • ${esc(t.time || "")}
+          </span>
+        </div>
+
+        <div class="therapy-grid">
+
+          <div>
+            <small>Tekanan Darah</small>
+            <b>${esc(t.bp || "-")}</b>
+          </div>
+
+          <div>
+            <small>Nyeri</small>
+            <b>
+              ${esc(t.painBefore ?? "-")}
+              →
+              ${esc(t.painAfter ?? "-")}
+            </b>
+          </div>
+
+          <div>
+            <small>Respons</small>
+            <b>${esc(t.response || "-")}</b>
+          </div>
+
+          <div>
+            <small>Status</small>
+            <b>${esc(formatStatus(t.status))}</b>
+          </div>
+
+        </div>
+
+        ${t.therapy ? `
+          <div class="detail">
+            <strong>Terapi</strong><br>
+            ${esc(t.therapy)}
+          </div>
+        ` : ""}
+
+        ${t.areas ? `
+          <div class="detail">
+            <strong>Area / Titik</strong><br>
+            ${esc(t.areas)}
+          </div>
+        ` : ""}
+
+        ${t.notes ? `
+          <div class="detail">
+            <strong>Catatan Terapis</strong><br>
+            ${esc(t.notes)}
+          </div>
+        ` : ""}
+
+        ${t.advice ? `
+          <div class="detail">
+            <strong>Saran di Rumah</strong><br>
+            ${esc(t.advice)}
+          </div>
+        ` : ""}
+
       </div>
+    `;
 
-      <div class="therapy-grid">
-
-        <div>
-          <small>Tekanan Darah</small>
-          <b>${esc(t.bp || "-")}</b>
-        </div>
-
-        <div>
-          <small>Nyeri</small>
-          <b>${esc(t.painBefore ?? "-")} → ${esc(t.painAfter ?? "-")}</b>
-        </div>
-
-        <div>
-          <small>Respons</small>
-          <b>${esc(t.response || "-")}</b>
-        </div>
-
-        <div>
-          <small>Status</small>
-          <b>${esc(formatStatus(t.status))}</b>
-        </div>
-
-      </div>
-
-      ${
-        t.therapy
-        ? `<div class="detail"><strong>Terapi</strong><br>${esc(t.therapy)}</div>`
-        : ""
-      }
-
-      ${
-        t.areas
-        ? `<div class="detail"><strong>Area / Titik</strong><br>${esc(t.areas)}</div>`
-        : ""
-      }
-
-      ${
-        t.notes
-        ? `<div class="detail"><strong>Catatan Terapis</strong><br>${esc(t.notes)}</div>`
-        : ""
-      }
-
-      ${
-        t.advice
-        ? `<div class="detail"><strong>Saran di Rumah</strong><br>${esc(t.advice)}</div>`
-        : ""
-      }
-
-    </div>
-  `).join("");
+  }).join("");
 }
 
-/* =========================================================
-   LOGOUT
-   ========================================================= */
 function patientLogout(){
 
   patientData = null;
@@ -786,130 +669,46 @@ function patientLogout(){
     bpChart = null;
   }
 
-  $("patientDashboard").classList.add("hidden");
-  $("portalLogin").classList.remove("hidden");
-
   $("patientId").value = "";
   $("patientPin").value = "";
-  $("patientLoginMsg").classList.add("hidden");
 
   showPortal();
 }
 
-/* =========================================================
-   PENDAFTARAN
-   ========================================================= */
-$("regForm").addEventListener("submit", async function(e){
+/* Event tombol */
+$("patientLoginBtn").addEventListener("click", loginPatient);
 
-  e.preventDefault();
-
-  const btn = $("regBtn");
-
-  btn.disabled = true;
-  btn.textContent = "⏳ Memproses...";
-
-  try{
-
-    const r = await apiPost({
-      action:"register",
-      name:$("name").value.trim(),
-      age:$("age").value,
-      gender:$("gender").value,
-      phone:$("phone").value.trim(),
-      address:$("address").value.trim(),
-      complaint:$("complaint").value.trim(),
-      history:$("history").value.trim()
-    });
-
-    console.log("REGISTER RESPONSE:", r);
-
-    if(!r || !r.ok){
-      throw new Error(
-        r && r.error
-          ? r.error
-          : "Pendaftaran gagal."
-      );
-    }
-
-    $("regForm").classList.add("hidden");
-    $("regSuccess").classList.remove("hidden");
-
-    $("regSuccess").innerHTML = `
-      <b>Pendaftaran berhasil!</b><br>
-      ID Pasien: <strong>${esc(r.id || "-")}</strong><br>
-      PIN Pasien: <strong>${esc(r.pin || "-")}</strong>
-      <br><br>
-      ⚠️ Simpan ID Pasien dan PIN ini.
-      Keduanya diperlukan untuk membuka Dashboard Pasien ASDTY.
-      <br><br>
-      <button class="btn primary" type="button" onclick="openRegisteredPortal()">
-        📊 Buka Dashboard Pasien
-      </button>
-    `;
-
-  }catch(e){
-
-    console.error("REGISTER:", e);
-    alert(e.message || "Pendaftaran gagal.");
-
-  }finally{
-
-    btn.disabled = false;
-    btn.textContent = "Kirim Pendaftaran";
-  }
-});
-
-/* =========================================================
-   BUKA DASHBOARD SETELAH REGISTRASI
-   ========================================================= */
-function openRegisteredPortal(){
-
-  const successText = $("regSuccess").innerText || "";
-
-  const idMatch = successText.match(
-    /ID Pasien:\s*(ASD-[A-Za-z0-9-]+)/
-  );
-
-  const pinMatch = successText.match(
-    /PIN Pasien:\s*(\d{6})/
-  );
-
-  showPortal();
-
-  if(idMatch){
-    $("patientId").value = idMatch[1];
-  }
-
-  if(pinMatch){
-    $("patientPin").value = pinMatch[1];
-  }
-
-  $("patientLoginBtn").focus();
-}
-
-/* =========================================================
-   ENTER UNTUK LOGIN
-   ========================================================= */
-$("patientPin").addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    e.preventDefault();
+$("patientPin").addEventListener("keydown", event => {
+  if(event.key === "Enter"){
+    event.preventDefault();
     loginPatient();
   }
 });
 
-/* =========================================================
-   URL ?portal=1
-   ========================================================= */
-(function(){
-
-  const params = new URLSearchParams(window.location.search);
-
-  if(params.get("portal") === "1"){
-    showPortal();
+$("patientId").addEventListener("keydown", event => {
+  if(event.key === "Enter"){
+    event.preventDefault();
+    $("patientPin").focus();
   }
+});
 
-})();
+$("backRegisterBtn").addEventListener("click", () => {
+  /*
+    Kembali ke halaman pendaftaran.
+    Menggunakan URL yang sama dengan parameter register.
+  */
+  window.location.href = window.location.origin + "/";
+});
+
+$("logoutBtn").addEventListener("click", patientLogout);
+
+/*
+  Jika URL dibuka dengan ?portal=1,
+  langsung tampilkan halaman login.
+*/
+if(new URLSearchParams(window.location.search).get("portal") === "1"){
+  showPortal();
+}
 </script>
-
 </body>
 </html>
